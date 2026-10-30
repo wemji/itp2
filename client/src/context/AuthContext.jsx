@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { api, clearApiSecurityState } from '../lib/api';
-import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
@@ -86,6 +85,7 @@ export function AuthProvider({ children }) {
       setProfile(null);
       setMfaVerified(null);
       setAuthNotice('');
+      const { supabase } = await import('../lib/supabase');
       await supabase.auth.signOut().catch(() => {});
     }
   }
