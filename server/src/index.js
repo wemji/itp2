@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { z } from 'zod';
 import { createAuthClient, supabase, supabaseAuth } from './supabase.js';
-import { requireAuth, requireStaff, requireAdmin } from './middleware/auth.js';
+import { getAuthAssuranceLevel, requireAuth, requireStaff, requireAdmin } from './middleware/auth.js';
 import { dayStart } from './utils.js';
 import { counterSchema, emailSchema, parse, registerSchema, serviceSchema, uuidSchema } from './validation.js';
 import { sendExternalNotification } from './notifications.js';
@@ -128,7 +128,14 @@ app.post('/api/auth/login', loginLimit, async (req, res) => {
   const { data: profile } = await supabase.from('users').select('*').eq('id', data.user.id).single();
   if (!profile?.is_active) return res.status(403).json({ error: 'Unable to sign in with these credentials.' });
   const csrfToken = setAuthCookies(req, res, data.session);
-  res.json({ user: data.user, profile, authenticated: true, csrfToken });
+  const privileged = ['admin', 'staff'].includes(profile.role);
+  res.json({
+    user: data.user,
+    profile,
+    authenticated: true,
+    csrfToken,
+    mfaVerified: !privileged || getAuthAssuranceLevel(data.session.access_token) === 'aal2',
+  });
 });
 app.post('/api/auth/logout', requireAuth, async (req, res) => {
   await supabase.auth.admin.signOut(req.authToken, 'global').catch(() => {});
@@ -139,6 +146,8 @@ app.get('/api/auth/me', requireAuth, (req, res) => res.json({
   user: req.user,
   profile: req.user.profile,
   csrfToken: ensureCsrfToken(req, res),
+  mfaVerified: !['admin', 'staff'].includes(req.user.profile.role)
+    || getAuthAssuranceLevel(req.authToken) === 'aal2',
 }));
 app.get('/api/auth/mfa/status', requireAuth, async (req, res) => {
   if (!['admin', 'staff'].includes(req.user.profile.role)) return res.status(403).json({ error: 'Staff access required.' });
@@ -201,8 +210,29 @@ app.post('/api/auth/forgot-password', recoveryLimit, async (req, res) => {
 app.get('/api/profile', requireAuth, (req, res) => res.json(req.user.profile));
 app.put('/api/profile', requireAuth, async (req, res) => { const parsed = z.object({ name: z.string().trim().min(2).max(80) }).safeParse(req.body); if (!parsed.success) return res.status(400).json({ error: 'Name must be between 2 and 80 characters.' }); const { data, error } = await supabase.from('users').update({ name: parsed.data.name }).eq('id', req.user.id).select('id, name, email, role, is_active, created_at').single(); if (error) return res.status(400).json({ error: 'Unable to update profile.' }); res.json(data); });
 
-app.get('/api/services', async (_, res) => { const { data, error } = await supabase.from('services').select('*').order('name'); if (error) return res.status(500).json({ error: 'Unable to load services.' });
-  const services = await Promise.all(data.map(async (service) => { const { count } = await supabase.from('queues').select('*', { count: 'exact', head: true }).eq('service_id', service.id).eq('status', 'WAITING'); return { ...service, waiting_count: count || 0, estimated_wait: (count || 0) * service.average_service_time }; })); res.json(services); });
+app.get('/api/services', async (_, res) => {
+  const [servicesResult, queuesResult] = await Promise.all([
+    supabase.from('services').select('*').order('name'),
+    supabase.from('queues').select('service_id').eq('status', 'WAITING'),
+  ]);
+  if (servicesResult.error || queuesResult.error) {
+    return res.status(500).json({ error: 'Unable to load services.' });
+  }
+
+  const waitingByService = queuesResult.data.reduce((counts, queue) => {
+    counts.set(queue.service_id, (counts.get(queue.service_id) || 0) + 1);
+    return counts;
+  }, new Map());
+  const services = servicesResult.data.map((service) => {
+    const waitingCount = waitingByService.get(service.id) || 0;
+    return {
+      ...service,
+      waiting_count: waitingCount,
+      estimated_wait: waitingCount * service.average_service_time,
+    };
+  });
+  return res.json(services);
+});
 app.get('/api/services/:id', async (req, res) => { const { data, error } = await supabase.from('services').select('*').eq('id', req.params.id).single(); if (error) return res.status(404).json({ error: 'Service not found.' }); res.json(data); });
 app.post('/api/services', requireAuth, requireStaff, async (req, res) => {
   const parsed = parse(serviceSchema, req.body);

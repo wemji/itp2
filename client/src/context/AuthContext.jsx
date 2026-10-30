@@ -10,17 +10,6 @@ export function AuthProvider({ children }) {
   const [authNotice, setAuthNotice] = useState('');
   const [loading, setLoading] = useState(true);
 
-  async function loadMfaStatus(currentProfile) {
-    if (!['admin', 'staff'].includes(currentProfile?.role)) {
-      setMfaVerified(true);
-      return true;
-    }
-    const status = await api('/auth/mfa/status');
-    const verified = status.currentLevel === 'aal2';
-    setMfaVerified(verified);
-    return verified;
-  }
-
   useEffect(() => {
     let mounted = true;
     window.localStorage.removeItem('onequeue_token');
@@ -35,11 +24,11 @@ export function AuthProvider({ children }) {
 
     window.addEventListener('onequeue:session-expired', handleExpiration);
     api('/auth/me', { suppressSessionExpiry: true })
-      .then(async ({ profile: currentProfile }) => {
+      .then(({ profile: currentProfile, mfaVerified: verified }) => {
         if (!mounted) return;
         setSession({ authenticated: true });
         setProfile(currentProfile);
-        await loadMfaStatus(currentProfile);
+        setMfaVerified(verified);
       })
       .catch(() => expire(false))
       .finally(() => mounted && setLoading(false));
@@ -58,8 +47,8 @@ export function AuthProvider({ children }) {
     });
     setSession({ authenticated: true });
     setProfile(data.profile);
-    const verified = await loadMfaStatus(data.profile);
-    return { ...data, requiresMfa: !verified };
+    setMfaVerified(data.mfaVerified);
+    return { ...data, requiresMfa: !data.mfaVerified };
   }
 
   async function register(name, email, password) {
@@ -72,7 +61,7 @@ export function AuthProvider({ children }) {
       const current = await api('/auth/me');
       setSession({ authenticated: true });
       setProfile(current.profile);
-      await loadMfaStatus(current.profile);
+      setMfaVerified(current.mfaVerified);
     }
     return data;
   }
@@ -91,8 +80,15 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function refreshMfa() {
+    const current = await api('/auth/me');
+    setProfile(current.profile);
+    setMfaVerified(current.mfaVerified);
+    return current.mfaVerified;
+  }
+
   return (
-    <AuthContext.Provider value={{ session, profile, mfaVerified, authNotice, loading, login, register, logout, refreshMfa: () => loadMfaStatus(profile) }}>
+    <AuthContext.Provider value={{ session, profile, mfaVerified, authNotice, loading, login, register, logout, refreshMfa }}>
       {children}
     </AuthContext.Provider>
   );

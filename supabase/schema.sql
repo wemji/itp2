@@ -33,11 +33,14 @@ create table public.queues (
 );
 create unique index one_active_queue_per_user on public.queues(user_id) where status in ('WAITING', 'CALLED', 'SERVING');
 create unique index service_queue_number_per_day on public.queues(service_id, queue_number, ((joined_at at time zone 'UTC')::date));
+create index queues_service_status_joined_idx on public.queues(service_id, status, joined_at);
+create index queues_status_joined_idx on public.queues(status, joined_at);
 create table public.notifications (
   id uuid primary key default gen_random_uuid(), user_id uuid not null references public.users(id) on delete cascade,
   queue_id uuid references public.queues(id) on delete cascade, title text not null, message text not null,
   is_read boolean not null default false, external_delivery_status text not null default 'not_configured', external_sent_at timestamptz, created_at timestamptz not null default now()
 );
+create index notifications_user_created_idx on public.notifications(user_id, created_at desc);
 create table public.queue_history (
   id uuid primary key default gen_random_uuid(), queue_id uuid not null references public.queues(id) on delete cascade,
   user_id uuid not null references public.users(id) on delete cascade, service_id uuid not null references public.services(id) on delete restrict,
@@ -45,6 +48,8 @@ create table public.queue_history (
   service_time integer not null default 0, created_at timestamptz not null default now()
 );
 create unique index queue_history_one_record_per_queue on public.queue_history(queue_id);
+create index queue_history_user_created_idx on public.queue_history(user_id, created_at desc);
+create index queue_history_status_created_idx on public.queue_history(status, created_at desc);
 
 create table public.audit_logs (
   id uuid primary key default gen_random_uuid(), actor_id uuid references public.users(id) on delete set null,

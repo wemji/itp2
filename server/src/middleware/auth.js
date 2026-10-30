@@ -1,6 +1,15 @@
 import { supabase, supabaseAuth } from '../supabase.js';
 import { getAuthTokens, setAuthCookies } from '../security.js';
 
+export function getAuthAssuranceLevel(accessToken) {
+  try {
+    const claims = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString('utf8'));
+    return claims.aal === 'aal2' ? 'aal2' : 'aal1';
+  } catch {
+    return null;
+  }
+}
+
 export async function requireAuth(req, res, next) {
   let { accessToken, refreshToken } = getAuthTokens(req);
   if (!accessToken && !refreshToken) return res.status(401).json({ error: 'Authentication required.' });
@@ -31,24 +40,18 @@ export async function requireAuth(req, res, next) {
 export function requireStaff(req, res, next) {
   if (!['admin', 'staff'].includes(req.user?.profile?.role)) return res.status(403).json({ error: 'Staff access required.' });
   if (process.env.REQUIRE_STAFF_MFA !== 'false') {
-    try {
-      const claims = JSON.parse(Buffer.from(req.authToken.split('.')[1], 'base64url').toString('utf8'));
-      if (claims.aal !== 'aal2') return res.status(403).json({ error: 'Multi-factor verification is required.', code: 'MFA_REQUIRED' });
-    } catch {
-      return res.status(401).json({ error: 'Session could not be verified.' });
-    }
+    const assuranceLevel = getAuthAssuranceLevel(req.authToken);
+    if (!assuranceLevel) return res.status(401).json({ error: 'Session could not be verified.' });
+    if (assuranceLevel !== 'aal2') return res.status(403).json({ error: 'Multi-factor verification is required.', code: 'MFA_REQUIRED' });
   }
   next();
 }
 export function requireAdmin(req, res, next) {
   if (req.user?.profile?.role !== 'admin') return res.status(403).json({ error: 'Administrator access required.' });
   if (process.env.REQUIRE_STAFF_MFA !== 'false') {
-    try {
-      const claims = JSON.parse(Buffer.from(req.authToken.split('.')[1], 'base64url').toString('utf8'));
-      if (claims.aal !== 'aal2') return res.status(403).json({ error: 'Multi-factor verification is required.', code: 'MFA_REQUIRED' });
-    } catch {
-      return res.status(401).json({ error: 'Session could not be verified.' });
-    }
+    const assuranceLevel = getAuthAssuranceLevel(req.authToken);
+    if (!assuranceLevel) return res.status(401).json({ error: 'Session could not be verified.' });
+    if (assuranceLevel !== 'aal2') return res.status(403).json({ error: 'Multi-factor verification is required.', code: 'MFA_REQUIRED' });
   }
   next();
 }
