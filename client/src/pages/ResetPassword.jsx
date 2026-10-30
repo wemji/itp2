@@ -161,7 +161,7 @@ export default function ResetPassword() {
                 autoComplete="new-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="8+ characters with a letter and number"
+                placeholder="8+ characters with letters and numbers"
               />
             </label>
             <label>
@@ -174,7 +174,7 @@ export default function ResetPassword() {
                 autoComplete="new-password"
                 value={confirm}
                 onChange={(event) => setConfirm(event.target.value)}
-                placeholder="Enter your new password again"
+                placeholder="Re-enter your new password"
               />
             </label>
             <button className="button full" disabled={busy}>

@@ -85,7 +85,7 @@ export default function ForgotPassword() {
                 autoComplete="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
+                placeholder="name@school.edu"
               />
             </label>
             <button className="button full" disabled={busy}>

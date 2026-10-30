@@ -85,7 +85,7 @@ export default function Auth({ register = false }) {
                   autoComplete="name"
                   value={form.name}
                   onChange={(event) => setForm({ ...form, name: event.target.value })}
-                  placeholder="Juan Dela Cruz"
+                  placeholder="e.g. Maria Santos"
                 />
               </label>
             )}
@@ -99,7 +99,7 @@ export default function Auth({ register = false }) {
                 autoComplete="email"
                 value={form.email}
                 onChange={(event) => setForm({ ...form, email: event.target.value })}
-                placeholder="you@example.com"
+                placeholder="name@school.edu"
               />
             </label>
 
@@ -114,7 +114,7 @@ export default function Auth({ register = false }) {
                 autoComplete={register ? 'new-password' : 'current-password'}
                 value={form.password}
                 onChange={(event) => setForm({ ...form, password: event.target.value })}
-                placeholder="8+ characters with a letter and number"
+                placeholder="8+ characters with letters and numbers"
               />
             </label>
 
@@ -129,7 +129,7 @@ export default function Auth({ register = false }) {
                   autoComplete="new-password"
                   value={form.confirm}
                   onChange={(event) => setForm({ ...form, confirm: event.target.value })}
-                  placeholder="Enter your password again"
+                  placeholder="Re-enter your password"
                 />
               </label>
             )}

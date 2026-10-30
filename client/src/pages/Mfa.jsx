@@ -108,7 +108,7 @@ export default function Mfa() {
                   maxLength="6"
                   value={code}
                   onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="000000"
+                  placeholder="123456"
                 />
               </label>
               <button className="button full" disabled={busy || code.length !== 6}>{busy ? <span className="spinner light" /> : 'Verify and continue'}</button>

@@ -61,7 +61,7 @@ export function CounterManagement() {
         <form className="form-card" onSubmit={submit}>
           <h2>Add counter</h2>
           <label>Service<select required value={form.service_id} onChange={(event) => setForm({ ...form, service_id: event.target.value })}><option value="">Select service</option>{services.map((service) => <option key={service.id} value={service.id}>{service.name}</option>)}</select></label>
-          <label>Counter name<input required minLength="1" maxLength="80" value={form.counter_name} onChange={(event) => setForm({ ...form, counter_name: event.target.value })} placeholder="Counter 1" /></label>
+          <label>Counter name<input required minLength="1" maxLength="80" value={form.counter_name} onChange={(event) => setForm({ ...form, counter_name: event.target.value })} placeholder="e.g. Counter A" /></label>
           <button className="button" disabled={busy}>{busy ? 'Creating…' : 'Create counter'}</button>
         </form>
         <div>
@@ -179,9 +179,9 @@ export function StaffManagement() {
       <div className="two-col">
         <form className="form-card" onSubmit={submit}>
           <h2>Add a team member</h2>
-          <label>Full name<input required minLength="2" maxLength="80" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label>
-          <label>Email<input required type="email" maxLength="200" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} /></label>
-          <label>Temporary password<input required minLength="8" maxLength="128" pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,128}" type="password" autoComplete="new-password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} placeholder="8+ characters with a letter and number" /></label>
+          <label>Full name<input required minLength="2" maxLength="80" autoComplete="name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="e.g. Maria Santos" /></label>
+          <label>Email<input required type="email" maxLength="200" autoComplete="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="staff@school.edu" /></label>
+          <label>Temporary password<input required minLength="8" maxLength="128" pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,128}" type="password" autoComplete="new-password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} placeholder="8+ characters with letters and numbers" /></label>
           <label>Role<select value={form.role} onChange={(event) => setForm({ ...form, role: event.target.value })}><option value="staff">Staff</option><option value="admin">Admin</option></select></label>
           <button className="button" disabled={busy}>{busy ? 'Creating…' : 'Create account'}</button>
         </form>

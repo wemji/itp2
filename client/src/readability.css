@@ -31,6 +31,176 @@ select:focus-visible {
 :is(.auth-neu, .customer-shell, .staff-shell) textarea,
 :is(.auth-neu, .customer-shell, .staff-shell) select { font-size: 14px; }
 
+/* Professional form controls shared across authentication, customer, staff, and admin views. */
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .staff-shell .admin-service,
+  .confirm-dialog
+) :is(input:not([type='checkbox']):not([type='radio']), textarea, select) {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 8px;
+  padding: 13px 15px;
+  border: 1px solid #d7dae8;
+  border-radius: 12px;
+  outline: none;
+  background-color: #fafbfe;
+  box-shadow: 0 1px 2px #20243d0a, inset 0 1px 0 #ffffff;
+  color: #252a46;
+  font-weight: 600;
+  line-height: 1.4;
+  caret-color: #5b5bd6;
+  transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .staff-shell .admin-service,
+  .confirm-dialog
+) :is(input:not([type='checkbox']):not([type='radio']), textarea, select):hover:not(:disabled) {
+  border-color: #bec2d7;
+  background-color: #fff;
+}
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .staff-shell .admin-service,
+  .confirm-dialog
+) :is(input:not([type='checkbox']):not([type='radio']), textarea, select):focus {
+  border-color: #6464d7;
+  background-color: #fff;
+  box-shadow: 0 0 0 4px #5b5bd616, 0 8px 20px #28285b0d;
+}
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .staff-shell .admin-service,
+  .confirm-dialog
+) :is(input, textarea)::placeholder {
+  color: #959aad;
+  font-weight: 500;
+  opacity: 1;
+}
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .confirm-dialog
+) label {
+  color: #3c425f;
+  font-weight: 750;
+  letter-spacing: .01em;
+  transition: color .18s ease;
+}
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .confirm-dialog
+) label:focus-within { color: #5151c6; }
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .staff-shell .admin-service
+) select {
+  appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236f738a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px;
+}
+
+body :is(.customer-shell .form-card, .staff-shell .form-card) textarea {
+  min-height: 108px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .confirm-dialog
+) :is(input, textarea, select):disabled {
+  border-color: #e0e2eb;
+  background-color: #eceef4;
+  box-shadow: none;
+  color: #85899c;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .confirm-dialog
+) :is(input, textarea, select):user-invalid {
+  border-color: #c85b69;
+  box-shadow: 0 0 0 4px #c85b6914;
+}
+
+body :is(
+  .auth-neu .auth-card,
+  .customer-shell .form-card,
+  .staff-shell .form-card,
+  .confirm-dialog
+) input:-webkit-autofill {
+  -webkit-text-fill-color: #252a46;
+  box-shadow: 0 0 0 1000px #fafbfe inset;
+  transition: background-color 9999s ease-out;
+}
+
+body :is(.customer-shell, .staff-shell) .history-search {
+  border: 1px solid #d7dae8;
+  background: #fafbfe;
+  box-shadow: 0 1px 2px #20243d0a, inset 0 1px 0 #fff;
+  transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+body :is(.customer-shell, .staff-shell) .history-search:focus-within {
+  border-color: #6464d7;
+  background: #fff;
+  box-shadow: 0 0 0 4px #5b5bd616, 0 8px 20px #28285b0d;
+  color: #5b5bd6;
+}
+
+body :is(.customer-shell, .staff-shell) .history-search input::placeholder {
+  color: #959aad;
+  font-weight: 500;
+  opacity: 1;
+}
+
+body .staff-shell .admin-service > select {
+  width: auto;
+  min-width: 108px;
+  min-height: 42px;
+  margin: 0;
+  padding: 9px 38px 9px 12px;
+  background-position: right 12px center;
+}
+
+body .auth-neu .auth-card input[inputmode='numeric'][maxlength='6'] {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: .32em;
+  text-align: center;
+}
+
 .auth-neu .auth-badge { font-size: 11px; }
 .auth-neu .auth-welcome > p { font-size: 17px; }
 .auth-neu .auth-card > .muted { font-size: 15px; }

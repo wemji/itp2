@@ -59,7 +59,7 @@ export default function ConfirmDialog({
               autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Confirm your identity"
+              placeholder="Enter your password to continue"
             />
           </label>
         )}

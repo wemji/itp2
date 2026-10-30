@@ -256,8 +256,8 @@ export function ServiceManagement() {
           <label>Service name<input required minLength="2" maxLength="100" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="e.g. Registrar’s Office" /></label>
           <label>Description<textarea rows="3" maxLength="500" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="What can customers get help with?" /></label>
           <label>Location<input maxLength="160" value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} placeholder="Building or floor" /></label>
-          <label>Operating hours<input required minLength="2" maxLength="100" value={form.operating_hours} onChange={(event) => setForm({ ...form, operating_hours: event.target.value })} /></label>
-          <label>Average service time<input required min="1" max="240" type="number" value={form.average_service_time} onChange={(event) => setForm({ ...form, average_service_time: Number(event.target.value) })} /></label>
+          <label>Operating hours<input required minLength="2" maxLength="100" value={form.operating_hours} onChange={(event) => setForm({ ...form, operating_hours: event.target.value })} placeholder="e.g. 8:00 AM – 5:00 PM" /></label>
+          <label>Average service time<input required min="1" max="240" step="1" inputMode="numeric" type="number" value={form.average_service_time} onChange={(event) => setForm({ ...form, average_service_time: Number(event.target.value) })} placeholder="Minutes per customer" /></label>
           <button className="button" disabled={busy}>{busy ? 'Saving…' : editing ? 'Save changes' : 'Add service'}</button>
         </form>
         <div>
