@@ -6,6 +6,16 @@ import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import '../auth.css';
 
+function getQrCodeSource(qrCode) {
+  if (typeof qrCode !== 'string') return '';
+  const value = qrCode.trim();
+  if (/^data:image\/svg\+xml(?:;[^,]*)?,/i.test(value)) return value;
+  if (value.startsWith('<svg')) {
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(value)}`;
+  }
+  return '';
+}
+
 export default function Mfa() {
   const { profile, refreshMfa } = useAuth();
   const navigate = useNavigate();
@@ -28,6 +38,7 @@ export default function Mfa() {
 
   const verifiedFactor = status?.factors?.find((factor) => factor.status === 'verified');
   const factorId = enrollment?.factorId || verifiedFactor?.id;
+  const qrCodeSource = getQrCodeSource(enrollment?.qrCode);
 
   async function enroll() {
     setBusy(true);
@@ -89,8 +100,8 @@ export default function Mfa() {
 
           {enrollment && (
             <div className="mfa-enrollment">
-              <img src={`data:image/svg+xml;utf8,${encodeURIComponent(enrollment.qrCode)}`} alt="Authenticator setup QR code" />
-              <div><span>Can’t scan?</span><code>{enrollment.secret}</code></div>
+              {qrCodeSource && <img src={qrCodeSource} alt="Authenticator setup QR code" />}
+              <div><span>Can&apos;t scan?</span><code>{enrollment.secret}</code></div>
             </div>
           )}
 
