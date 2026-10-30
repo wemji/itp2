@@ -127,9 +127,38 @@ export default function Landing() {
       </main>
 
       <footer className="landing-footer">
-        <Link to="/" className="brand"><span className="brand-mark">O</span><span>ONEQUEUE</span></Link>
-        <p>Smarter queues. Better days.</p>
-        <span>© {new Date().getFullYear()} ONEQUEUE</span>
+        <div className="landing-footer-main">
+          <div className="landing-footer-brand">
+            <Link to="/" className="brand">
+              <span className="brand-mark">O</span>
+              <span>ONEQUEUE</span>
+            </Link>
+            <p>Join remotely, follow your place, and arrive when your turn is near.</p>
+          </div>
+
+          <nav className="landing-footer-nav" aria-label="Footer navigation">
+            <span>Explore</span>
+            <a href="#how-it-works">How it works</a>
+            <Link to="/login">Log in</Link>
+            <Link to="/register">Create account</Link>
+          </nav>
+
+          <div className="landing-footer-promise">
+            <span className="landing-footer-promise-icon"><BellRing size={18} /></span>
+            <div>
+              <span>Stay in control</span>
+              <strong>Your place, wherever you wait.</strong>
+            </div>
+          </div>
+        </div>
+
+        <div className="landing-footer-bottom">
+          <span>© {new Date().getFullYear()} ONEQUEUE. All rights reserved.</span>
+          <div className="landing-footer-signals">
+            <span><i /> Real-time queue updates</span>
+            <span>Designed for every device</span>
+          </div>
+        </div>
       </footer>
     </div>
   );
