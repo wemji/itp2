@@ -1,1 +1,2 @@
 export const LIVE_POLL_INTERVAL_MS = 2500;
+export const PUBLIC_STATS_POLL_INTERVAL_MS = 10000;

@@ -1,15 +1,20 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   BellRing,
   Check,
+  CircleCheckBig,
   Clock3,
   Hash,
   MonitorSmartphone,
+  Radio,
   ShieldCheck,
   Sparkles,
   UsersRound,
 } from 'lucide-react';
+import { api } from '../lib/api';
+import { PUBLIC_STATS_POLL_INTERVAL_MS } from '../lib/polling';
 import '../landing.css';
 
 const steps = [
@@ -24,6 +29,93 @@ const benefits = [
   [BellRing, 'Live notifications', 'Stay informed as your queue moves and your turn approaches.'],
   [ShieldCheck, 'Simple and reliable', 'A clear, secure experience designed for every device.'],
 ];
+
+function LiveQueueActivity() {
+  const [stats, setStats] = useState(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadStats = async () => {
+      try {
+        const nextStats = await api('/public/stats');
+        if (!active) return;
+        setStats(nextStats);
+        setError(false);
+      } catch {
+        if (active) setError(true);
+      }
+    };
+
+    loadStats();
+    const poller = window.setInterval(loadStats, PUBLIC_STATS_POLL_INTERVAL_MS);
+    return () => {
+      active = false;
+      window.clearInterval(poller);
+    };
+  }, []);
+
+  const values = {
+    openServices: stats?.openServices ?? '—',
+    peopleWaiting: stats?.peopleWaiting ?? '—',
+    typicalWait: stats
+      ? (stats.typicalWaitMinutes > 0 ? `~${stats.typicalWaitMinutes} min` : 'No wait')
+      : '—',
+    completedToday: stats?.completedToday ?? '—',
+  };
+
+  return (
+    <div className="landing-live-wrap">
+      <article className="landing-live-card" aria-busy={!stats && !error}>
+        <header className="landing-live-header">
+          <div className="window-dots" aria-hidden="true"><i /><i /><i /></div>
+          <strong><Radio size={15} /> Live queue activity</strong>
+          <span><ShieldCheck size={14} /> Aggregate only</span>
+        </header>
+
+        <div className="landing-live-content">
+          <div className="landing-live-heading">
+            <div>
+              <span>Public system status</span>
+              <h2>Queue activity<br />at a glance.</h2>
+            </div>
+            <span className="landing-live-status"><i /> Live</span>
+          </div>
+          <p>Anonymous totals across all services. No customer details are shown.</p>
+
+          <div className="landing-live-metrics">
+            <div>
+              <span className="landing-live-icon"><MonitorSmartphone size={18} /></span>
+              <span>Open services</span>
+              <strong>{values.openServices}</strong>
+            </div>
+            <div>
+              <span className="landing-live-icon"><UsersRound size={18} /></span>
+              <span>People waiting</span>
+              <strong>{values.peopleWaiting}</strong>
+            </div>
+            <div>
+              <span className="landing-live-icon"><Clock3 size={18} /></span>
+              <span>Typical wait</span>
+              <strong>{values.typicalWait}</strong>
+            </div>
+            <div>
+              <span className="landing-live-icon"><CircleCheckBig size={18} /></span>
+              <span>Completed today</span>
+              <strong>{values.completedToday}</strong>
+            </div>
+          </div>
+
+          <footer className="landing-live-footer" aria-live="polite">
+            <span className={error ? 'is-reconnecting' : ''}><i /> {error ? 'Reconnecting to live activity' : stats ? 'Updated just now' : 'Loading live activity'}</span>
+            <span>Refreshes every 10 sec</span>
+          </footer>
+        </div>
+      </article>
+    </div>
+  );
+}
 
 export default function Landing() {
   return (
@@ -75,6 +167,8 @@ export default function Landing() {
               <span><Clock3 size={15} /> Wait from anywhere</span>
             </div>
           </div>
+
+          <LiveQueueActivity />
 
           <div className="landing-mobile-trust" aria-label="Queue benefits">
             <span><Check size={15} /> Real-time updates</span>
@@ -153,7 +247,7 @@ export default function Landing() {
         </div>
 
         <div className="landing-footer-bottom">
-          <span>© {new Date().getFullYear()} ONEQUEUE. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} ONEQUEUE. All rights reserved.</span>
           <div className="landing-footer-signals">
             <span><i /> Real-time queue updates</span>
             <span>Designed for every device</span>

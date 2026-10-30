@@ -11,6 +11,7 @@ import { counterSchema, emailSchema, parse, registerSchema, serviceSchema, uuidS
 import { sendExternalNotification } from './notifications.js';
 import { queueTransitions } from './queueRules.js';
 import { writeAudit } from './audit.js';
+import { summarizePublicStats } from './publicStats.js';
 import {
   clearAuthCookies,
   createRateLimiter,
@@ -86,6 +87,29 @@ async function requestAuthClient(req) {
 }
 async function notifyUser(userId, queueId, title, message) { const { data: notification, error } = await supabase.from('notifications').insert({ user_id: userId, queue_id: queueId, title, message }).select().single(); if (!error) { const { data: user } = await supabase.from('users').select('email').eq('id', userId).maybeSingle(); const delivery = user?.email ? await sendExternalNotification({ to: user.email, subject: `ONEQUEUE: ${title}`, text: message }) : { delivered: false, reason: 'no_email' }; await supabase.from('notifications').update({ external_delivery_status: delivery.delivered ? 'delivered' : delivery.reason, external_sent_at: delivery.delivered ? new Date().toISOString() : null }).eq('id', notification.id); } return { notification, error }; }
 app.get('/api/health', (_, res) => res.json({ ok: true, service: 'ONEQUEUE API' }));
+
+app.get('/api/public/stats', async (_, res) => {
+  const [servicesResult, queuesResult, historyResult] = await Promise.all([
+    supabase.from('services').select('id, average_service_time').eq('status', 'OPEN'),
+    supabase.from('queues').select('service_id').eq('status', 'WAITING'),
+    supabase
+      .from('queue_history')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'COMPLETED')
+      .gte('created_at', dayStart()),
+  ]);
+
+  if (servicesResult.error || queuesResult.error || historyResult.error) {
+    return res.status(500).json({ error: 'Unable to load public queue activity.' });
+  }
+
+  res.set('Cache-Control', 'public, s-maxage=8, stale-while-revalidate=20');
+  res.json(summarizePublicStats({
+    services: servicesResult.data,
+    waitingQueues: queuesResult.data,
+    completedToday: historyResult.count,
+  }));
+});
 
 app.post('/api/auth/register', registerLimit, async (req, res) => {
   const parsed = parse(registerSchema, req.body); if (parsed.error) return res.status(400).json({ error: parsed.error });
