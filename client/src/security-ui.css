@@ -1,0 +1,83 @@
+.confirm-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #24263f66;
+  backdrop-filter: blur(8px);
+}
+
+.confirm-dialog {
+  position: relative;
+  width: min(100%, 430px);
+  padding: 30px;
+  border: 1px solid #ffffffbf;
+  border-radius: 24px;
+  background: #eef0f7;
+  box-shadow: 18px 18px 42px #2022384a, -10px -10px 30px #ffffff7a;
+  color: #20243d;
+}
+
+.confirm-close {
+  position: absolute;
+  top: 17px;
+  right: 17px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 11px;
+  background: #eef0f7;
+  box-shadow: 4px 4px 9px #cdd0dd, -4px -4px 9px #fff;
+  color: #7b8095;
+}
+
+.confirm-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  box-shadow: inset 5px 5px 11px #d0d3df, inset -5px -5px 11px #fff;
+  color: #5b5bd6;
+}
+
+.confirm-icon.danger { color: #ad4b58; }
+.confirm-dialog h2 { margin: 22px 0 8px; font: 700 22px Manrope, sans-serif; }
+.confirm-dialog > p { margin: 0; color: #6f738a; font-size: 14px; line-height: 1.65; }
+
+.confirm-dialog label {
+  display: block;
+  margin-top: 20px;
+  color: #484d68;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.confirm-dialog input {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 14px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  outline: 0;
+  background: #eef0f7;
+  box-shadow: inset 5px 5px 11px #d0d3df, inset -5px -5px 11px #fff;
+  color: #20243d;
+}
+
+.confirm-dialog input:focus { border-color: #5b5bd657; box-shadow: inset 5px 5px 11px #d0d3df, inset -5px -5px 11px #fff, 0 0 0 3px #5b5bd615; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+.confirm-actions .button { min-width: 112px; }
+.confirm-actions .confirm-danger { background: #ad4b58; }
+.confirm-actions .confirm-danger:hover { background: #963c48; }
+
+@media (max-width: 560px) {
+  .confirm-dialog { padding: 25px 21px; }
+  .confirm-actions { flex-direction: column-reverse; }
+  .confirm-actions .button { width: 100%; }
+}
