@@ -382,6 +382,62 @@
   font-weight: 800;
 }
 
+.staff-shell .service-hours-fields {
+  min-width: 0;
+  margin: 17px 0;
+  padding: 0;
+  border: 0;
+}
+
+.staff-shell .service-hours-fields legend {
+  margin-bottom: 9px;
+  color: #484d68;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.staff-shell .service-hours-fields > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.staff-shell .service-hours-fields label { margin: 0; }
+
+.staff-shell .service-hours-fields p {
+  margin: 8px 2px 0;
+  color: #85899d;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.staff-shell .field-hint {
+  color: #898da0;
+  font-weight: 600;
+}
+
+.staff-shell .service-time-input {
+  position: relative;
+  display: block;
+  margin-top: 8px;
+}
+
+.staff-shell .service-time-input input {
+  margin-top: 0 !important;
+  padding-right: 76px !important;
+}
+
+.staff-shell .service-time-input > span {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  color: #777c92;
+  font-size: 11px;
+  font-weight: 750;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
 .staff-shell .form-card input,
 .staff-shell .form-card textarea,
 .staff-shell .form-card select,

@@ -183,13 +183,50 @@ export function QueueManagement() {
   );
 }
 
+const EMPTY_SERVICE_FORM = {
+  name: '',
+  description: '',
+  location: '',
+  opening_time: '08:00',
+  closing_time: '17:00',
+  average_service_time: '5',
+};
+
+function toTimeInputValue(hour, minute, period = '') {
+  let normalizedHour = Number(hour);
+  if (period) {
+    normalizedHour %= 12;
+    if (period.toUpperCase() === 'PM') normalizedHour += 12;
+  }
+  return `${String(normalizedHour).padStart(2, '0')}:${minute}`;
+}
+
+function parseOperatingHours(value) {
+  const matches = [...String(value || '').matchAll(/(\d{1,2}):(\d{2})\s*(AM|PM)?/gi)];
+  if (matches.length !== 2) return { opening_time: '08:00', closing_time: '17:00' };
+  return {
+    opening_time: toTimeInputValue(matches[0][1], matches[0][2], matches[0][3]),
+    closing_time: toTimeInputValue(matches[1][1], matches[1][2], matches[1][3]),
+  };
+}
+
+function formatClockTime(value) {
+  const [hourText, minute = '00'] = value.split(':');
+  const hour = Number(hourText);
+  const period = hour >= 12 ? 'PM' : 'AM';
+  return `${hour % 12 || 12}:${minute} ${period}`;
+}
+
+function formatOperatingHours(openingTime, closingTime) {
+  return `${formatClockTime(openingTime)} – ${formatClockTime(closingTime)}`;
+}
+
 export function ServiceManagement() {
-  const empty = { name: '', description: '', location: '', operating_hours: '8:00 AM - 5:00 PM', average_service_time: 5 };
   const [services, setServices] = useState([]);
   const [editing, setEditing] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState(empty);
+  const [form, setForm] = useState(EMPTY_SERVICE_FORM);
   const [pending, setPending] = useState(null);
 
   const load = () => api('/services').then(setServices).catch((loadError) => setError(loadError.message));
@@ -197,14 +234,24 @@ export function ServiceManagement() {
 
   async function submit(event) {
     event.preventDefault();
-    setBusy(true);
     setError('');
+    if (form.opening_time >= form.closing_time) {
+      setError('Closing time must be later than opening time.');
+      return;
+    }
+    setBusy(true);
     try {
       await api(editing ? `/services/${editing}` : '/services', {
         method: editing ? 'PUT' : 'POST',
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          name: form.name,
+          description: form.description,
+          location: form.location,
+          operating_hours: formatOperatingHours(form.opening_time, form.closing_time),
+          average_service_time: Number(form.average_service_time),
+        }),
       });
-      setForm(empty);
+      setForm(EMPTY_SERVICE_FORM);
       setEditing('');
       await load();
     } catch (submitError) {
@@ -215,13 +262,14 @@ export function ServiceManagement() {
   }
 
   function edit(service) {
+    const hours = parseOperatingHours(service.operating_hours);
     setEditing(service.id);
     setForm({
       name: service.name,
       description: service.description,
       location: service.location,
-      operating_hours: service.operating_hours,
-      average_service_time: service.average_service_time,
+      ...hours,
+      average_service_time: String(service.average_service_time),
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -251,13 +299,26 @@ export function ServiceManagement() {
         <form className="form-card" onSubmit={submit}>
           <div className="form-card-heading">
             <h2>{editing ? 'Edit service' : 'Add a service'}</h2>
-            {editing && <button type="button" className="text-button" onClick={() => { setEditing(''); setForm(empty); }}>Cancel</button>}
+            {editing && <button type="button" className="text-button" onClick={() => { setEditing(''); setForm(EMPTY_SERVICE_FORM); }}>Cancel</button>}
           </div>
           <label>Service name<input required minLength="2" maxLength="100" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="e.g. Registrar’s Office" /></label>
           <label>Description<textarea rows="3" maxLength="500" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="What can customers get help with?" /></label>
           <label>Location<input maxLength="160" value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} placeholder="Building or floor" /></label>
-          <label>Operating hours<input required minLength="2" maxLength="100" value={form.operating_hours} onChange={(event) => setForm({ ...form, operating_hours: event.target.value })} placeholder="e.g. 8:00 AM – 5:00 PM" /></label>
-          <label>Average service time<input required min="1" max="240" step="1" inputMode="numeric" type="number" value={form.average_service_time} onChange={(event) => setForm({ ...form, average_service_time: Number(event.target.value) })} placeholder="Minutes per customer" /></label>
+          <fieldset className="service-hours-fields">
+            <legend>Operating hours</legend>
+            <div>
+              <label htmlFor="service-opening-time">Opens<input id="service-opening-time" required type="time" value={form.opening_time} onChange={(event) => setForm({ ...form, opening_time: event.target.value })} /></label>
+              <label htmlFor="service-closing-time">Closes<input id="service-closing-time" required type="time" value={form.closing_time} onChange={(event) => setForm({ ...form, closing_time: event.target.value })} /></label>
+            </div>
+            <p>Use the service center’s local time.</p>
+          </fieldset>
+          <label htmlFor="average-service-time">
+            Average service time <span className="field-hint">per customer</span>
+            <span className="service-time-input">
+              <input id="average-service-time" required min="1" max="240" step="1" inputMode="numeric" type="number" value={form.average_service_time} onChange={(event) => setForm({ ...form, average_service_time: event.target.value })} placeholder="5" />
+              <span>minutes</span>
+            </span>
+          </label>
           <button className="button" disabled={busy}>{busy ? 'Saving…' : editing ? 'Save changes' : 'Add service'}</button>
         </form>
         <div>

@@ -26,11 +26,27 @@ export const registerSchema = z.object({
   password: passwordSchema,
 }).strict();
 
+const operatingHoursPattern = /^(0?[1-9]|1[0-2]):([0-5]\d) (AM|PM) [–-] (0?[1-9]|1[0-2]):([0-5]\d) (AM|PM)$/;
+
+function clockMinutes(hour, minute, period) {
+  const normalizedHour = (Number(hour) % 12) + (period === 'PM' ? 12 : 0);
+  return (normalizedHour * 60) + Number(minute);
+}
+
+export const operatingHoursSchema = z.string()
+  .trim()
+  .regex(operatingHoursPattern, 'Operating hours must include a valid opening and closing time.')
+  .refine((value) => {
+    const match = value.match(operatingHoursPattern);
+    if (!match) return false;
+    return clockMinutes(match[4], match[5], match[6]) > clockMinutes(match[1], match[2], match[3]);
+  }, 'Closing time must be later than opening time.');
+
 export const serviceSchema = z.object({
   name: z.string().trim().min(2).max(100),
   description: z.string().trim().max(500),
   location: z.string().trim().max(160),
-  operating_hours: z.string().trim().min(2).max(100),
+  operating_hours: operatingHoursSchema,
   average_service_time: z.coerce.number().int().positive().max(240),
   status: z.enum(['OPEN', 'CLOSED']).optional(),
 }).strict();
