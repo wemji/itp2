@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle2, KeyRound, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -11,7 +11,69 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [checkingLink, setCheckingLink] = useState(true);
+  const [recoveryReady, setRecoveryReady] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let mounted = true;
+
+    const acceptSession = (session) => {
+      if (!mounted || !session) return false;
+      setRecoveryReady(true);
+      setCheckingLink(false);
+      setError('');
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return true;
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') acceptSession(session);
+    });
+
+    async function resolveRecoverySession() {
+      try {
+        const url = new URL(window.location.href);
+        const code = url.searchParams.get('code');
+        const hash = new URLSearchParams(url.hash.slice(1));
+        const accessToken = hash.get('access_token');
+        const refreshToken = hash.get('refresh_token');
+
+        if (code) {
+          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError) throw exchangeError;
+          if (acceptSession(data.session)) return;
+        } else if (accessToken && refreshToken) {
+          const { data, error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (sessionError) throw sessionError;
+          if (acceptSession(data.session)) return;
+        } else {
+          const { data, error: sessionError } = await supabase.auth.getSession();
+          if (sessionError) throw sessionError;
+          if (acceptSession(data.session)) return;
+        }
+
+        if (mounted) {
+          setError('This password-reset link is invalid or expired. Request a new link and try again.');
+          setCheckingLink(false);
+        }
+      } catch {
+        if (mounted) {
+          setError('We could not verify this password-reset link. Request a new link and try again.');
+          setCheckingLink(false);
+        }
+      }
+    }
+
+    resolveRecoverySession();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   async function submit(event) {
     event.preventDefault();
@@ -25,6 +87,7 @@ export default function ResetPassword() {
     try {
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) throw updateError;
+      await supabase.auth.signOut({ scope: 'local' });
       setMessage('Password updated. You can now sign in.');
       setTimeout(() => navigate('/login'), 1200);
     } catch (submitError) {
@@ -79,7 +142,14 @@ export default function ResetPassword() {
             </div>
           )}
 
-          <form onSubmit={submit}>
+          {checkingLink && (
+            <div className="recovery-success" role="status">
+              <span className="spinner" />
+              <span>Verifying your secure recovery link…</span>
+            </div>
+          )}
+
+          {recoveryReady && <form onSubmit={submit}>
             <label>
               New password
               <input
@@ -110,7 +180,11 @@ export default function ResetPassword() {
             <button className="button full" disabled={busy}>
               {busy ? <span className="spinner light" /> : 'Update password'}
             </button>
-          </form>
+          </form>}
+
+          {!checkingLink && !recoveryReady && (
+            <p className="auth-switch"><Link to="/forgot-password">Request a new reset link</Link></p>
+          )}
         </section>
       </main>
     </div>
