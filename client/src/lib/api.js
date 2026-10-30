@@ -9,15 +9,16 @@ export function clearApiSecurityState() {
 }
 
 export async function api(path, options = {}) {
-  const method = String(options.method || 'GET').toUpperCase();
+  const { suppressSessionExpiry = false, ...fetchOptions } = options;
+  const method = String(fetchOptions.method || 'GET').toUpperCase();
   const response = await fetch(`${base}${path}`, {
-    ...options,
+    ...fetchOptions,
     method,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...(!safeMethods.has(method) && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
-      ...options.headers,
+      ...fetchOptions.headers,
     },
   });
 
@@ -25,7 +26,7 @@ export async function api(path, options = {}) {
   if (body.csrfToken) csrfToken = body.csrfToken;
 
   if (!response.ok) {
-    if (response.status === 401 && !path.startsWith('/auth/login')) {
+    if (response.status === 401 && !suppressSessionExpiry && !path.startsWith('/auth/login')) {
       clearApiSecurityState();
       window.dispatchEvent(new CustomEvent('onequeue:session-expired'));
     }

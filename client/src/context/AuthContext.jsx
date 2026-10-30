@@ -29,12 +29,12 @@ export function AuthProvider({ children }) {
       setSession(null);
       setProfile(null);
       setMfaVerified(null);
-      if (showNotice) setAuthNotice('Your session expired. Please sign in again.');
+      setAuthNotice(showNotice ? 'Your session expired. Please sign in again.' : '');
     };
     const handleExpiration = () => expire(true);
 
     window.addEventListener('onequeue:session-expired', handleExpiration);
-    api('/auth/me')
+    api('/auth/me', { suppressSessionExpiry: true })
       .then(async ({ profile: currentProfile }) => {
         if (!mounted) return;
         setSession({ authenticated: true });
@@ -63,6 +63,7 @@ export function AuthProvider({ children }) {
   }
 
   async function register(name, email, password) {
+    setAuthNotice('');
     const data = await api('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name: name.trim(), email: email.trim(), password }),
