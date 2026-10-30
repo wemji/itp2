@@ -438,6 +438,110 @@
   transform: translateY(-50%);
 }
 
+.staff-shell .service-management-layout {
+  grid-template-columns: minmax(360px, 410px) minmax(0, 1fr);
+  gap: 36px;
+}
+
+.staff-shell .service-form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px;
+  border-radius: 20px;
+}
+
+.staff-shell .service-form-card .form-card-heading {
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 2px;
+}
+
+.staff-shell .service-form-card .form-card-heading h2 {
+  margin: 0;
+  color: #2f344f;
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.staff-shell .service-form-card .form-card-heading p {
+  max-width: 280px;
+  margin: 7px 0 0;
+  color: #7c8197;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.staff-shell .service-form-card > label,
+.staff-shell .service-form-card .service-hours-fields {
+  margin: 0;
+  text-transform: none;
+}
+
+.staff-shell .service-form-card > label,
+.staff-shell .service-hours-fields label {
+  color: #3f455f;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.staff-shell .service-form-card :is(input, textarea) {
+  min-height: 48px;
+  margin-top: 7px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.staff-shell .service-form-card textarea {
+  min-height: 96px;
+  padding-top: 13px;
+}
+
+.staff-shell .service-form-card .service-hours-fields legend {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+.staff-shell .service-form-card .service-hours-fields legend span {
+  color: #3f455f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.staff-shell .service-form-card .service-hours-fields legend small,
+.staff-shell .service-form-card .field-label-row small {
+  color: #8b8fa2;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.staff-shell .service-form-card .service-hours-fields > div { gap: 12px; }
+.staff-shell .service-form-card .service-hours-fields input { margin-top: 7px; }
+
+.staff-shell .service-form-card .field-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.staff-shell .service-form-card .service-time-input { margin-top: 7px; }
+
+.staff-shell .service-form-card > .button {
+  justify-content: center;
+  width: 100%;
+  min-height: 49px;
+  margin-top: 4px;
+  border-radius: 13px;
+}
+
 .staff-shell .form-card input,
 .staff-shell .form-card textarea,
 .staff-shell .form-card select,

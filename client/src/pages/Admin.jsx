@@ -295,25 +295,27 @@ export function ServiceManagement() {
     <>
       <div className="page-heading"><div><div className="eyebrow">CONFIGURATION</div><h1>Services</h1><p className="muted">Set up the services customers can join and keep hours easy to find.</p></div></div>
       <Toast message={error} />
-      <div className="two-col">
-        <form className="form-card" onSubmit={submit}>
+      <div className="two-col service-management-layout">
+        <form className="form-card service-form-card" onSubmit={submit}>
           <div className="form-card-heading">
-            <h2>{editing ? 'Edit service' : 'Add a service'}</h2>
+            <div>
+              <h2>{editing ? 'Edit service' : 'Add a service'}</h2>
+              <p>Define what customers can join and when it is available.</p>
+            </div>
             {editing && <button type="button" className="text-button" onClick={() => { setEditing(''); setForm(EMPTY_SERVICE_FORM); }}>Cancel</button>}
           </div>
           <label>Service name<input required minLength="2" maxLength="100" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="e.g. Registrar’s Office" /></label>
           <label>Description<textarea rows="3" maxLength="500" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="What can customers get help with?" /></label>
           <label>Location<input maxLength="160" value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} placeholder="Building or floor" /></label>
           <fieldset className="service-hours-fields">
-            <legend>Operating hours</legend>
+            <legend><span>Operating hours</span><small>Local time</small></legend>
             <div>
               <label htmlFor="service-opening-time">Opens<input id="service-opening-time" required type="time" value={form.opening_time} onChange={(event) => setForm({ ...form, opening_time: event.target.value })} /></label>
               <label htmlFor="service-closing-time">Closes<input id="service-closing-time" required type="time" value={form.closing_time} onChange={(event) => setForm({ ...form, closing_time: event.target.value })} /></label>
             </div>
-            <p>Use the service center’s local time.</p>
           </fieldset>
           <label htmlFor="average-service-time">
-            Average service time <span className="field-hint">per customer</span>
+            <span className="field-label-row"><span>Average service time</span><small>Per customer</small></span>
             <span className="service-time-input">
               <input id="average-service-time" required min="1" max="240" step="1" inputMode="numeric" type="number" value={form.average_service_time} onChange={(event) => setForm({ ...form, average_service_time: event.target.value })} placeholder="5" />
               <span>minutes</span>
