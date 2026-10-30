@@ -1,2 +1,174 @@
-import { useState } from 'react'; import { Link, useLocation, useNavigate } from 'react-router-dom'; import { useAuth } from '../context/AuthContext'; import Toast from '../components/Toast';
-export default function Auth({ register = false }) { const { login, register: signup } = useAuth(); const nav = useNavigate(); const [form, setForm] = useState({ name:'', email:'', password:'' }); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); async function submit(e) { e.preventDefault(); setError(''); setBusy(true); try { const data = register ? await signup(form.name, form.email, form.password) : await login(form.email, form.password); if (register && !data.session) { nav('/login', { state: { message: 'Account created. Check your email to confirm it, then log in.' } }); } else nav('/dashboard'); } catch (e) { setError(e.message); } finally { setBusy(false); } } return <div className="auth-page"><Link to="/" className="brand auth-brand"><span className="brand-mark">O</span> ONEQUEUE</Link><div className="auth-card"><div className="eyebrow">{register ? 'CREATE YOUR ACCOUNT' : 'WELCOME BACK'}</div><h1>{register ? 'Join ONEQUEUE' : 'Sign in to continue'}</h1><p className="muted">{register ? 'Manage your queues from anywhere.' : 'Your next turn is closer than you think.'}</p><Toast message={error}/><form onSubmit={submit}>{register && <label>Full name<input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="Juan Dela Cruz"/></label>}<label>Email<input required type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} placeholder="you@example.com"/></label><label>Password<input required minLength="6" type="password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} placeholder="At least 6 characters"/></label>{!register&&<div className="forgot-row"><Link to="/forgot-password">Forgot password?</Link></div>}<button className="button full" disabled={busy}>{busy ? <span className="spinner light"/> : register ? 'Create account' : 'Log in'}</button></form><p className="auth-switch">{register ? 'Already have an account?' : 'New to ONEQUEUE?'} <Link to={register ? '/login' : '/register'}>{register ? 'Log in' : 'Create an account'}</Link></p></div></div> }
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Check, Clock3, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import Toast from '../components/Toast';
+import '../auth.css';
+
+export default function Auth({ register = false }) {
+  const { login, register: signup, authNotice } = useAuth();
+  const nav = useNavigate();
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function submit(event) {
+    event.preventDefault();
+    setError('');
+    if (register && form.password !== form.confirm) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setBusy(true);
+
+    try {
+      const data = register
+        ? await signup(form.name, form.email, form.password)
+        : await login(form.email, form.password);
+
+      if (register && !data.authenticated) {
+        nav('/login', {
+          state: { message: 'Account created. Check your email to confirm it, then log in.' },
+        });
+      } else if (data.requiresMfa) {
+        nav('/mfa');
+      } else {
+        nav('/dashboard');
+      }
+    } catch (submitError) {
+      setError(submitError.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="auth-page auth-neu">
+      <div className="auth-glow auth-glow-one" />
+      <div className="auth-glow auth-glow-two" />
+
+      <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
+        <span className="brand-mark">O</span>
+        <span>ONEQUEUE</span>
+      </Link>
+
+      <main className="auth-shell">
+        <section className="auth-welcome" aria-label="ONEQUEUE benefits">
+          <div className="auth-badge"><span /> Smart queue access</div>
+          <h2>Skip the line.<br /><em>Keep your place.</em></h2>
+          <p>Sign in once, join remotely, and know exactly when it is your turn.</p>
+
+          <div className="auth-queue-preview" aria-hidden="true">
+            <div className="auth-preview-head">
+              <span>Live queue</span>
+              <span className="auth-preview-secure"><ShieldCheck size={13} /> Secure</span>
+            </div>
+            <div className="auth-preview-number">
+              <div><small>Your number</small><strong>A-057</strong></div>
+              <span><i /> Waiting</span>
+            </div>
+            <div className="auth-preview-progress"><span /></div>
+            <div className="auth-preview-stats">
+              <div><small>People ahead</small><strong>15</strong></div>
+              <div><small>Estimated wait</small><strong>~30 min</strong></div>
+            </div>
+          </div>
+
+          <div className="auth-perks">
+            <span><Check size={14} /> Real-time updates</span>
+            <span><Clock3 size={14} /> Wait from anywhere</span>
+          </div>
+        </section>
+
+        <section className="auth-card">
+          <div className="eyebrow">{register ? 'CREATE YOUR ACCOUNT' : 'WELCOME BACK'}</div>
+          <h1>{register ? 'Join ONEQUEUE' : 'Sign in to continue'}</h1>
+          <p className="muted">
+            {register
+              ? 'Create an account and manage your queues from anywhere.'
+              : 'Enter your details to access your queues and updates.'}
+          </p>
+
+          <Toast message={error} />
+          {!error && authNotice && <div className="session-notice" role="status">{authNotice}</div>}
+
+          <form onSubmit={submit}>
+            {register && (
+              <label>
+                Full name
+                <input
+                  required
+                  autoComplete="name"
+                  value={form.name}
+                  onChange={(event) => setForm({ ...form, name: event.target.value })}
+                  placeholder="Juan Dela Cruz"
+                />
+              </label>
+            )}
+
+            <label>
+              Email
+              <input
+                required
+                type="email"
+                maxLength="200"
+                autoComplete="email"
+                value={form.email}
+                onChange={(event) => setForm({ ...form, email: event.target.value })}
+                placeholder="you@example.com"
+              />
+            </label>
+
+            <label>
+              Password
+              <input
+                required
+                minLength="8"
+                maxLength="128"
+                pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,128}"
+                type="password"
+                autoComplete={register ? 'new-password' : 'current-password'}
+                value={form.password}
+                onChange={(event) => setForm({ ...form, password: event.target.value })}
+                placeholder="8+ characters with a letter and number"
+              />
+            </label>
+
+            {register && (
+              <label>
+                Confirm password
+                <input
+                  required
+                  minLength="8"
+                  maxLength="128"
+                  type="password"
+                  autoComplete="new-password"
+                  value={form.confirm}
+                  onChange={(event) => setForm({ ...form, confirm: event.target.value })}
+                  placeholder="Enter your password again"
+                />
+              </label>
+            )}
+
+            {!register && (
+              <div className="forgot-row">
+                <Link to="/forgot-password">Forgot password?</Link>
+              </div>
+            )}
+
+            <button className="button full" disabled={busy}>
+              {busy ? <span className="spinner light" /> : register ? 'Create account' : 'Log in'}
+            </button>
+          </form>
+
+          <p className="auth-switch">
+            {register ? 'Already have an account?' : 'New to ONEQUEUE?'}{' '}
+            <Link to={register ? '/login' : '/register'}>
+              {register ? 'Log in' : 'Create an account'}
+            </Link>
+          </p>
+        </section>
+      </main>
+    </div>
+  );
+}
