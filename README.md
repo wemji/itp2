@@ -82,6 +82,10 @@ SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
 PORT=4000
 CLIENT_ORIGIN=http://localhost:5173
+COOKIE_DOMAIN=
+COOKIE_SAME_SITE=lax
+TRUST_PROXY=1
+REQUIRE_STAFF_MFA=true
 
 # client/.env
 VITE_API_URL=http://localhost:4000/api
@@ -93,11 +97,13 @@ Never commit `.env` or expose `SUPABASE_SERVICE_ROLE_KEY` to the client.
 
 ## Installation and local development
 
-1. Create a Supabase project and run [`schema.sql`](./supabase/schema.sql). For an existing ONEQUEUE database, also run [`20261017_completion.sql`](./supabase/migrations/20261017_completion.sql).
+1. Create a Supabase project and run [`schema.sql`](./supabase/schema.sql). For an existing ONEQUEUE database, also run [`20261017_completion.sql`](./supabase/migrations/20261017_completion.sql) and [`20261030_security_hardening.sql`](./supabase/migrations/20261030_security_hardening.sql).
 2. Copy the environment examples and fill in credentials.
 3. Install dependencies from the root: `npm install`.
 4. Run both applications: `npm.cmd run dev` in Windows PowerShell (`npm run dev` in other shells).
 5. Open `http://localhost:5173`.
+
+Authentication uses server-managed `HttpOnly` cookies, CSRF protection, exact-origin CORS, and automatic token refresh. Keep `CLIENT_ORIGIN` exact. In production, keep the frontend and API on the same parent domain when possible, set `COOKIE_DOMAIN` only when that parent domain must be shared, and leave `COOKIE_SAME_SITE=lax`. Cross-site deployments require `COOKIE_SAME_SITE=none` and HTTPS, but same-site custom domains are more reliable. Leave `REQUIRE_STAFF_MFA=true` so staff and administrators must enroll a TOTP authenticator before accessing operations.
 
 To promote a user to staff for a demonstration, update the profile in Supabase SQL Editor:
 
