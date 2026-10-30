@@ -1,29 +1,40 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
-import { AdminDashboard, QueueManagement, ServiceManagement } from './pages/Admin';
-import { CounterManagement, StaffManagement } from './pages/AdminExtras';
-import Auth from './pages/Auth';
-import { Dashboard, Services } from './pages/Customer';
-import ForgotPassword from './pages/ForgotPassword';
-import History from './pages/History';
-import Landing from './pages/Landing';
-import LiveQueue from './pages/LiveQueue';
-import Mfa from './pages/Mfa';
-import NotificationsPage from './pages/NotificationsPage';
-import Profile from './pages/Profile';
-import ResetPassword from './pages/ResetPassword';
-import SecurityLog from './pages/SecurityLog';
 import './styles.css';
 import './security-ui.css';
 import './readability.css';
+
+const Landing = lazy(() => import('./pages/Landing'));
+const Auth = lazy(() => import('./pages/Auth'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Mfa = lazy(() => import('./pages/Mfa'));
+const LiveQueue = lazy(() => import('./pages/LiveQueue'));
+const History = lazy(() => import('./pages/History'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const Profile = lazy(() => import('./pages/Profile'));
+const SecurityLog = lazy(() => import('./pages/SecurityLog'));
+const Dashboard = lazy(() => import('./pages/Customer').then((module) => ({ default: module.Dashboard })));
+const Services = lazy(() => import('./pages/Customer').then((module) => ({ default: module.Services })));
+const AdminDashboard = lazy(() => import('./pages/Admin').then((module) => ({ default: module.AdminDashboard })));
+const QueueManagement = lazy(() => import('./pages/Admin').then((module) => ({ default: module.QueueManagement })));
+const ServiceManagement = lazy(() => import('./pages/Admin').then((module) => ({ default: module.ServiceManagement })));
+const CounterManagement = lazy(() => import('./pages/AdminExtras').then((module) => ({ default: module.CounterManagement })));
+const StaffManagement = lazy(() => import('./pages/AdminExtras').then((module) => ({ default: module.StaffManagement })));
+
+function RouteFallback() {
+  return <div className="center-screen"><span className="spinner" /></div>;
+}
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth register />} />
@@ -62,7 +73,8 @@ export default function App() {
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </AuthProvider>
   );
