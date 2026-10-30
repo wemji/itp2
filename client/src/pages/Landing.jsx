@@ -5,7 +5,6 @@ import {
   Check,
   Clock3,
   Hash,
-  MapPin,
   MonitorSmartphone,
   ShieldCheck,
   Sparkles,
@@ -74,53 +73,6 @@ export default function Landing() {
             <div className="landing-trust-row">
               <span><Check size={15} /> Real-time updates</span>
               <span><Clock3 size={15} /> Wait from anywhere</span>
-            </div>
-          </div>
-
-          <div className="landing-preview-wrap" aria-label="Example live queue status">
-            <div className="landing-preview">
-              <div className="landing-preview-bar">
-                <div className="window-dots"><i /><i /><i /></div>
-                <span>Live queue</span>
-                <span className="preview-secure"><ShieldCheck size={14} /> Secure</span>
-              </div>
-
-              <div className="landing-preview-content">
-                <div className="preview-heading">
-                  <div>
-                    <span className="preview-label">YOUR QUEUE NUMBER</span>
-                    <strong>A-057</strong>
-                  </div>
-                  <span className="preview-status"><i /> Waiting</span>
-                </div>
-
-                <div className="preview-office">
-                  <span className="preview-office-icon"><MapPin size={18} /></span>
-                  <span><strong>Registrar&apos;s Office</strong><small>Main Building · Ground Floor</small></span>
-                </div>
-
-                <div className="preview-progress-copy">
-                  <span>Queue progress</span>
-                  <strong>72%</strong>
-                </div>
-                <div className="preview-progress"><span /></div>
-
-                <div className="preview-metrics">
-                  <div><span>Now serving</span><strong>A-042</strong></div>
-                  <div><span>People ahead</span><strong>15</strong></div>
-                  <div><span>Est. wait</span><strong>~30 min</strong></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="preview-notification">
-              <span><BellRing size={18} /></span>
-              <div><strong>We&apos;ll keep you posted</strong><small>Your queue is moving normally.</small></div>
-              <i />
-            </div>
-            <div className="preview-time-card">
-              <Clock3 size={18} />
-              <div><strong>30 min</strong><small>to your turn</small></div>
             </div>
           </div>
 

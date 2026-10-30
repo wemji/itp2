@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Check, Clock3, ShieldCheck } from 'lucide-react';
+import { Check, Clock3 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import '../auth.css';
@@ -57,22 +57,6 @@ export default function Auth({ register = false }) {
           <div className="auth-badge"><span /> Smart queue access</div>
           <h2>Skip the line.<br /><em>Keep your place.</em></h2>
           <p>Sign in once, join remotely, and know exactly when it is your turn.</p>
-
-          <div className="auth-queue-preview" aria-hidden="true">
-            <div className="auth-preview-head">
-              <span>Live queue</span>
-              <span className="auth-preview-secure"><ShieldCheck size={13} /> Secure</span>
-            </div>
-            <div className="auth-preview-number">
-              <div><small>Your number</small><strong>A-057</strong></div>
-              <span><i /> Waiting</span>
-            </div>
-            <div className="auth-preview-progress"><span /></div>
-            <div className="auth-preview-stats">
-              <div><small>People ahead</small><strong>15</strong></div>
-              <div><small>Estimated wait</small><strong>~30 min</strong></div>
-            </div>
-          </div>
 
           <div className="auth-perks">
             <span><Check size={14} /> Real-time updates</span>
