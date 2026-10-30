@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, LockKeyhole, Mail, ShieldCheck } from 'lucide-react';
 import { api } from '../lib/api';
 import Toast from '../components/Toast';
+import LoadingButton from '../components/LoadingButton';
 import '../auth.css';
 
 export default function ForgotPassword() {
@@ -88,9 +89,9 @@ export default function ForgotPassword() {
                 placeholder="name@school.edu"
               />
             </label>
-            <button className="button full" disabled={busy}>
-              {busy ? <span className="spinner light" /> : 'Send reset link'}
-            </button>
+            <LoadingButton className="button full" loading={busy} loadingLabel="Sending reset link…">
+              Send reset link
+            </LoadingButton>
           </form>
 
           <p className="auth-switch recovery-back">

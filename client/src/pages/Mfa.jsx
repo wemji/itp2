@@ -4,6 +4,7 @@ import { KeyRound, ShieldCheck, Smartphone } from 'lucide-react';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import LoadingButton from '../components/LoadingButton';
 import '../auth.css';
 
 function getQrCodeSource(qrCode) {
@@ -93,9 +94,16 @@ export default function Mfa() {
           <Toast message={error} />
 
           {!verifiedFactor && !enrollment && (
-            <button className="button full mfa-start" onClick={enroll} disabled={busy || !status}>
-              {busy ? <span className="spinner light" /> : <><KeyRound size={17} /> Set up authenticator</>}
-            </button>
+            <LoadingButton
+              type="button"
+              className="button full mfa-start"
+              onClick={enroll}
+              loading={busy}
+              loadingLabel="Preparing authenticator…"
+              disabled={!status}
+            >
+              <KeyRound size={17} /> Set up authenticator
+            </LoadingButton>
           )}
 
           {enrollment && (
@@ -122,7 +130,14 @@ export default function Mfa() {
                   placeholder="123456"
                 />
               </label>
-              <button className="button full" disabled={busy || code.length !== 6}>{busy ? <span className="spinner light" /> : 'Verify and continue'}</button>
+              <LoadingButton
+                className="button full"
+                loading={busy}
+                loadingLabel="Verifying code…"
+                disabled={code.length !== 6}
+              >
+                Verify and continue
+              </LoadingButton>
             </form>
           )}
         </section>

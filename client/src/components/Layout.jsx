@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import LoadingButton from './LoadingButton';
 import '../customer.css';
 import '../admin.css';
 
@@ -22,6 +23,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const staff = ['admin', 'staff'].includes(profile?.role);
 
   const links = staff
@@ -82,16 +84,23 @@ export default function Layout() {
               <small>{profile?.role || 'customer'}</small>
             </div>
           </div>
-          <button
+          <LoadingButton
             className="logout"
+            loading={loggingOut}
+            loadingLabel="Logging out…"
             onClick={async () => {
-              await logout();
-              navigate('/');
+              setLoggingOut(true);
+              try {
+                await logout();
+              } finally {
+                setLoggingOut(false);
+                navigate('/');
+              }
             }}
           >
             <LogOut size={17} />
             <span>Log out</span>
-          </button>
+          </LoadingButton>
         </div>
       </aside>
 

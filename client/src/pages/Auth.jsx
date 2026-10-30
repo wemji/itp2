@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Check, Clock3 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import LoadingButton from '../components/LoadingButton';
 import '../auth.css';
 
 export default function Auth({ register = false }) {
@@ -140,9 +141,13 @@ export default function Auth({ register = false }) {
               </div>
             )}
 
-            <button className="button full" disabled={busy}>
-              {busy ? <span className="spinner light" /> : register ? 'Create account' : 'Log in'}
-            </button>
+            <LoadingButton
+              className="button full"
+              loading={busy}
+              loadingLabel={register ? 'Creating account…' : 'Signing in…'}
+            >
+              {register ? 'Create account' : 'Log in'}
+            </LoadingButton>
           </form>
 
           <p className="auth-switch">

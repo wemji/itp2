@@ -6,6 +6,7 @@ import { LIVE_POLL_INTERVAL_MS } from '../lib/polling';
 import { useAuth } from '../context/AuthContext';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
+import LoadingButton from '../components/LoadingButton';
 
 function useLoad(path) {
   const [rows, setRows] = useState([]);
@@ -86,6 +87,7 @@ export function Dashboard() {
         title="Cancel this queue?"
         description={`Queue ${active?.queue_number || ''} will be removed from the active line. You will need to join again if you change your mind.`}
         confirmLabel="Cancel queue"
+        busyLabel="Cancelling queue…"
         danger
         busy={cancelling}
         onCancel={() => setConfirmCancel(false)}
@@ -130,7 +132,16 @@ export function Services() {
               <p>{service.description || 'Service information is available at the counter.'}</p>
               <small><MapPin size={14} />{service.location || 'Location not specified'} · {service.operating_hours}</small>
               <div className="service-meta"><span><Clock3 size={15} /> ~{service.estimated_wait || 0} min wait</span><span>{service.waiting_count || 0} waiting</span></div>
-              <button className="button full" disabled={service.status !== 'OPEN' || busy === service.id} onClick={() => join(service)}>{busy === service.id ? 'Joining…' : service.status === 'OPEN' ? 'Join queue' : 'Currently closed'}</button>
+              <LoadingButton
+                type="button"
+                className="button full"
+                loading={busy === service.id}
+                loadingLabel="Joining queue…"
+                disabled={service.status !== 'OPEN'}
+                onClick={() => join(service)}
+              >
+                {service.status === 'OPEN' ? 'Join queue' : 'Currently closed'}
+              </LoadingButton>
             </article>
           ))}
         </div>

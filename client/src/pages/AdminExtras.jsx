@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
+import LoadingButton from '../components/LoadingButton';
 
 export function CounterManagement() {
   const [rows, setRows] = useState([]);
@@ -62,7 +63,9 @@ export function CounterManagement() {
           <h2>Add counter</h2>
           <label>Service<select required value={form.service_id} onChange={(event) => setForm({ ...form, service_id: event.target.value })}><option value="">Select service</option>{services.map((service) => <option key={service.id} value={service.id}>{service.name}</option>)}</select></label>
           <label>Counter name<input required minLength="1" maxLength="80" value={form.counter_name} onChange={(event) => setForm({ ...form, counter_name: event.target.value })} placeholder="e.g. Counter A" /></label>
-          <button className="button" disabled={busy}>{busy ? 'Creating…' : 'Create counter'}</button>
+          <LoadingButton className="button" loading={busy && !pending} loadingLabel="Creating counter…" disabled={busy}>
+            Create counter
+          </LoadingButton>
         </form>
         <div>
           <h2 className="list-heading">All counters <span>{rows.length}</span></h2>
@@ -83,6 +86,7 @@ export function CounterManagement() {
         title={pending?.status === 'ACTIVE' ? 'Set this counter offline?' : 'Activate this counter?'}
         description={pending?.status === 'ACTIVE' ? `${pending?.counter_name} will stop accepting active service work.` : `${pending?.counter_name} will become available for service work.`}
         confirmLabel={pending?.status === 'ACTIVE' ? 'Set offline' : 'Activate counter'}
+        busyLabel={pending?.status === 'ACTIVE' ? 'Setting offline…' : 'Activating counter…'}
         danger={pending?.status === 'ACTIVE'}
         busy={busy}
         onCancel={() => setPending(null)}
@@ -111,6 +115,7 @@ export function StaffManagement() {
       description: `${form.name.trim()} will receive ${form.role} access to ONEQUEUE. Confirm your identity to continue.`,
       confirmLabel: 'Create account',
       danger: form.role === 'admin',
+      busyLabel: 'Creating account…',
     });
   }
 
@@ -156,6 +161,7 @@ export function StaffManagement() {
         : `${row.name} will keep operational access but lose team-management permissions.`,
       confirmLabel: 'Change role',
       danger: role === 'admin',
+      busyLabel: 'Updating role…',
     });
   }
 
@@ -169,6 +175,7 @@ export function StaffManagement() {
         : `${row.name} will regain access based on their assigned role.`,
       confirmLabel: row.is_active ? 'Deactivate account' : 'Reactivate account',
       danger: row.is_active,
+      busyLabel: row.is_active ? 'Deactivating account…' : 'Reactivating account…',
     });
   }
 
@@ -183,7 +190,9 @@ export function StaffManagement() {
           <label>Email<input required type="email" maxLength="200" autoComplete="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="staff@school.edu" /></label>
           <label>Temporary password<input required minLength="8" maxLength="128" pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,128}" type="password" autoComplete="new-password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} placeholder="8+ characters with letters and numbers" /></label>
           <label>Role<select value={form.role} onChange={(event) => setForm({ ...form, role: event.target.value })}><option value="staff">Staff</option><option value="admin">Admin</option></select></label>
-          <button className="button" disabled={busy}>{busy ? 'Creating…' : 'Create account'}</button>
+          <LoadingButton className="button" loading={busy && pending?.kind === 'create'} loadingLabel="Creating account…" disabled={busy}>
+            Create account
+          </LoadingButton>
         </form>
         <div>
           <h2 className="list-heading">Team members <span>{rows.length}</span></h2>
@@ -205,6 +214,7 @@ export function StaffManagement() {
         title={pending?.title}
         description={pending?.description}
         confirmLabel={pending?.confirmLabel}
+        busyLabel={pending?.busyLabel}
         danger={pending?.danger}
         requirePassword
         busy={busy}

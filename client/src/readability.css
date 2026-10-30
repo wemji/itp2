@@ -272,3 +272,37 @@ body .auth-neu .auth-card input[inputmode='numeric'][maxlength='6'] {
   .landing-refresh .landing-nav .button { font-size: 14px; }
   .landing-refresh .landing-hero-copy > p { font-size: 17px; }
 }
+
+.button-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: button-spin .7s linear infinite;
+}
+
+button[aria-busy='true'] {
+  cursor: wait;
+}
+
+.button:active:not(:disabled),
+a.button:active {
+  transform: translateY(1px) scale(.985);
+}
+
+.text-button[aria-busy='true'] {
+  display: inline-flex;
+  align-items: center;
+  gap: .45em;
+}
+
+@keyframes button-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button-spinner { animation-duration: 1.4s; }
+}

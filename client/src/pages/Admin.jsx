@@ -15,6 +15,7 @@ import { api } from '../lib/api';
 import { LIVE_POLL_INTERVAL_MS } from '../lib/polling';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
+import LoadingButton from '../components/LoadingButton';
 
 export function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -120,13 +121,13 @@ export function QueueManagement() {
 
   function requestAction(queue, name) {
     const labels = {
-      call: ['Call this customer?', `Queue ${queue.queue_number} will be notified that their turn is ready.`, 'Call customer'],
-      start: ['Start this service?', `Queue ${queue.queue_number} will be marked as currently being served.`, 'Start service'],
-      complete: ['Complete this service?', `Queue ${queue.queue_number} will be archived as completed.`, 'Complete service'],
-      skip: ['Mark as no-show?', `Queue ${queue.queue_number} will be removed from the active line and recorded as a no-show.`, 'Mark no-show'],
+      call: ['Call this customer?', `Queue ${queue.queue_number} will be notified that their turn is ready.`, 'Call customer', 'Calling customer…'],
+      start: ['Start this service?', `Queue ${queue.queue_number} will be marked as currently being served.`, 'Start service', 'Starting service…'],
+      complete: ['Complete this service?', `Queue ${queue.queue_number} will be archived as completed.`, 'Complete service', 'Completing service…'],
+      skip: ['Mark as no-show?', `Queue ${queue.queue_number} will be removed from the active line and recorded as a no-show.`, 'Mark no-show', 'Marking no-show…'],
     };
-    const [title, description, confirmLabel] = labels[name];
-    setPending({ queue, name, title, description, confirmLabel, danger: name === 'skip' });
+    const [title, description, confirmLabel, busyLabel] = labels[name];
+    setPending({ queue, name, title, description, confirmLabel, busyLabel, danger: name === 'skip' });
   }
 
   const active = queues.filter((queue) => ['WAITING', 'CALLED', 'SERVING'].includes(queue.status));
@@ -135,7 +136,18 @@ export function QueueManagement() {
     <>
       <div className="page-heading">
         <div><div className="eyebrow">OPERATIONS</div><h1>Live queues</h1><p className="muted">Manage customers and move each queue through the service flow.</p></div>
-        <button className="button secondary" onClick={load}><RefreshCw size={16} /> Refresh</button>
+        <LoadingButton
+          type="button"
+          className="button secondary"
+          loading={loading}
+          loadingLabel="Refreshing…"
+          onClick={() => {
+            setLoading(true);
+            load();
+          }}
+        >
+          <RefreshCw size={16} /> Refresh
+        </LoadingButton>
       </div>
       <Toast message={error} />
       <div className="queue-summary">
@@ -174,6 +186,7 @@ export function QueueManagement() {
         title={pending?.title}
         description={pending?.description}
         confirmLabel={pending?.confirmLabel}
+        busyLabel={pending?.busyLabel}
         danger={pending?.danger}
         busy={Boolean(busy)}
         onCancel={() => setPending(null)}
@@ -321,7 +334,14 @@ export function ServiceManagement() {
               <span>minutes</span>
             </span>
           </label>
-          <button className="button" disabled={busy}>{busy ? 'Saving…' : editing ? 'Save changes' : 'Add service'}</button>
+          <LoadingButton
+            className="button"
+            loading={busy && !pending}
+            loadingLabel={editing ? 'Saving changes…' : 'Adding service…'}
+            disabled={busy}
+          >
+            {editing ? 'Save changes' : 'Add service'}
+          </LoadingButton>
         </form>
         <div>
           <h2 className="list-heading">All services <span>{services.length}</span></h2>
@@ -343,6 +363,7 @@ export function ServiceManagement() {
         title={pending?.status === 'OPEN' ? 'Close this service?' : 'Reopen this service?'}
         description={pending?.status === 'OPEN' ? `${pending?.name} will no longer accept new queue entries.` : `${pending?.name} will become available to customers again.`}
         confirmLabel={pending?.status === 'OPEN' ? 'Close service' : 'Reopen service'}
+        busyLabel={pending?.status === 'OPEN' ? 'Closing service…' : 'Reopening service…'}
         danger={pending?.status === 'OPEN'}
         busy={busy}
         onCancel={() => setPending(null)}

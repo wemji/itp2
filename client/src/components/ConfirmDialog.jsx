@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, ShieldCheck, X } from 'lucide-react';
+import LoadingButton from './LoadingButton';
 
 export default function ConfirmDialog({
   open,
   title,
   description,
   confirmLabel = 'Confirm',
+  busyLabel = 'Processing…',
   danger = false,
   requirePassword = false,
   busy = false,
@@ -65,9 +67,14 @@ export default function ConfirmDialog({
         )}
         <div className="confirm-actions">
           <button type="button" className="button secondary" onClick={onCancel} disabled={busy}>Go back</button>
-          <button className={danger ? 'button confirm-danger' : 'button'} disabled={busy || (requirePassword && !password)}>
-            {busy ? <span className="spinner light" /> : confirmLabel}
-          </button>
+          <LoadingButton
+            className={danger ? 'button confirm-danger' : 'button'}
+            loading={busy}
+            loadingLabel={busyLabel}
+            disabled={requirePassword && !password}
+          >
+            {confirmLabel}
+          </LoadingButton>
         </div>
       </form>
     </div>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle2, KeyRound, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Toast from '../components/Toast';
+import LoadingButton from '../components/LoadingButton';
 import '../auth.css';
 
 export default function ResetPassword() {
@@ -177,9 +178,9 @@ export default function ResetPassword() {
                 placeholder="Re-enter your new password"
               />
             </label>
-            <button className="button full" disabled={busy}>
-              {busy ? <span className="spinner light" /> : 'Update password'}
-            </button>
+            <LoadingButton className="button full" loading={busy} loadingLabel="Updating password…">
+              Update password
+            </LoadingButton>
           </form>}
 
           {!checkingLink && !recoveryReady && (
