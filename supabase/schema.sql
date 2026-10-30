@@ -46,6 +46,14 @@ create table public.queue_history (
 );
 create unique index queue_history_one_record_per_queue on public.queue_history(queue_id);
 
+create table public.audit_logs (
+  id uuid primary key default gen_random_uuid(), actor_id uuid references public.users(id) on delete set null,
+  action text not null check (char_length(action) between 2 and 100), target_type text not null check (char_length(target_type) between 2 and 80),
+  target_id uuid, metadata jsonb not null default '{}'::jsonb, created_at timestamptz not null default now()
+);
+create index audit_logs_created_at_idx on public.audit_logs(created_at desc);
+create index audit_logs_actor_id_idx on public.audit_logs(actor_id);
+
 create or replace function public.handle_new_user() returns trigger language plpgsql security definer set search_path = public as $$
 begin insert into public.users (id, name, email) values (new.id, coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)), new.email); return new; end; $$;
 drop trigger if exists on_auth_user_created on auth.users;
@@ -75,6 +83,7 @@ begin
 end; $$;
 alter table public.users enable row level security; alter table public.services enable row level security; alter table public.counters enable row level security;
 alter table public.queues enable row level security; alter table public.notifications enable row level security; alter table public.queue_history enable row level security;
+alter table public.audit_logs enable row level security;
 create policy "users read own or staff" on public.users for select using (id = auth.uid() or public.is_staff());
 create policy "services public read" on public.services for select using (true);
 create policy "services staff write" on public.services for all using (public.is_staff()) with check (public.is_staff());
@@ -86,6 +95,7 @@ create policy "queues own cancel or staff" on public.queues for update using (us
 create policy "notifications own" on public.notifications for select using (user_id = auth.uid());
 create policy "notifications update own" on public.notifications for update using (user_id = auth.uid());
 create policy "history own or staff" on public.queue_history for select using (user_id = auth.uid() or public.is_staff());
+create policy "audit logs admin read" on public.audit_logs for select using (exists (select 1 from public.users where id = auth.uid() and role = 'admin' and is_active));
 
 insert into public.services (name, description, location, operating_hours, average_service_time) values
 ('Registrar''s Office', 'Student documents and records', 'Main Building', '8:00 AM - 5:00 PM', 5),
