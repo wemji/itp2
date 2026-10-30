@@ -1,0 +1,104 @@
+/* System-wide readability lift: approximately two pixels on supporting UI text. */
+body { background: #eef0f7; color: #20243d; }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid #5b5bd642;
+  outline-offset: 3px;
+}
+
+:is(.landing-refresh, .auth-neu, .customer-shell, .staff-shell) { font-size: 16px; }
+
+:is(.landing-refresh, .auth-neu, .customer-shell, .staff-shell) .button { font-size: 14px; }
+:is(.auth-neu, .customer-shell, .staff-shell) .eyebrow { font-size: 11px; }
+:is(.auth-neu, .customer-shell, .staff-shell) .muted,
+:is(.customer-shell, .staff-shell) .page-heading p { font-size: 15px; }
+:is(.customer-shell, .staff-shell) .nav-link { font-size: 14px; }
+:is(.customer-shell, .staff-shell) .workspace-label { font-size: 11px; }
+:is(.customer-shell, .staff-shell) .breadcrumb,
+:is(.customer-shell, .staff-shell) .topbar-user { font-size: 13px; }
+:is(.customer-shell, .staff-shell) .user-mini strong { font-size: 15px; }
+:is(.customer-shell, .staff-shell) .user-mini small { font-size: 13px; }
+:is(.customer-shell, .staff-shell) .logout { font-size: 14px; }
+:is(.customer-shell, .staff-shell) .status { font-size: 11px; }
+:is(.customer-shell, .staff-shell) .text-button { font-size: 11px; }
+
+:is(.auth-neu, .customer-shell, .staff-shell) label { font-size: 13px; }
+:is(.auth-neu, .customer-shell, .staff-shell) input,
+:is(.auth-neu, .customer-shell, .staff-shell) textarea,
+:is(.auth-neu, .customer-shell, .staff-shell) select { font-size: 14px; }
+
+.auth-neu .auth-badge { font-size: 11px; }
+.auth-neu .auth-welcome > p { font-size: 17px; }
+.auth-neu .auth-card > .muted { font-size: 15px; }
+.auth-neu .auth-switch { font-size: 14px; }
+.auth-neu .auth-perks { font-size: 12px; }
+.auth-neu .auth-preview-head { font-size: 12px; }
+.auth-neu .auth-preview-number small,
+.auth-neu .auth-preview-number > span,
+.auth-neu .auth-preview-stats small,
+.recovery-preview span { font-size: 10px; }
+.auth-neu .auth-preview-stats strong,
+.recovery-preview strong { font-size: 15px; }
+.recovery-preview p { font-size: 12px; }
+
+.landing-refresh .landing-nav-link,
+.landing-refresh .text-link { font-size: 15px; }
+.landing-refresh .landing-badge { font-size: 12px; }
+.landing-refresh .landing-secondary-action { font-size: 15px; }
+.landing-refresh .landing-trust-row { font-size: 13px; }
+.landing-refresh .landing-benefits h2 { font-size: 16px; }
+.landing-refresh .landing-benefits p { font-size: 13px; }
+.landing-refresh .landing-section-heading > p { font-size: 16px; }
+.landing-refresh .landing-step-number { font-size: 13px; }
+.landing-refresh .landing-step h3 { font-size: 18px; }
+.landing-refresh .landing-step p { font-size: 14px; }
+.landing-refresh .landing-cta-kicker { font-size: 11px; }
+.landing-refresh .landing-cta-login,
+.landing-refresh .landing-footer { font-size: 13px; }
+
+.customer-shell .queue-hero > p,
+.customer-shell .step p,
+.customer-shell .service-card p { font-size: 14px; }
+.customer-shell .queue-metrics span { font-size: 11px; }
+.customer-shell .service-card > small,
+.customer-shell .service-meta { font-size: 13px; }
+.customer-shell .history-search input { font-size: 14px; }
+.customer-shell .history-filters button,
+.customer-shell .history-meta { font-size: 12px; }
+.customer-shell .history-title-row strong { font-size: 15px; }
+.customer-shell .history-queue-number { font-size: 13px; }
+.customer-shell .notification-copy p { font-size: 15px; }
+.customer-shell .notification-copy small { font-size: 13px; }
+
+.staff-shell .stat-card span { font-size: 12px; }
+.staff-shell .stat-card small { font-size: 11px; }
+.staff-shell .chart-card p,
+.staff-shell .admin-callout p { font-size: 13px; }
+.staff-shell .bar-column,
+.staff-shell .bar-column strong { font-size: 11px; }
+.staff-shell .queue-summary { font-size: 12px; }
+.staff-shell table { font-size: 13px; }
+.staff-shell th { font-size: 10px; }
+.staff-shell td small { font-size: 11px; }
+.staff-shell .actions button { font-size: 11px; }
+.staff-shell .form-card label { font-size: 12px; }
+.staff-shell .admin-service-copy strong { font-size: 14px; }
+.staff-shell .admin-service p { font-size: 12px; }
+.staff-shell .admin-service small { font-size: 11px; }
+.staff-shell .history-search input { font-size: 13px; }
+.staff-shell .history-filters button,
+.staff-shell .history-meta { font-size: 11px; }
+.staff-shell .history-title-row strong { font-size: 15px; }
+.staff-shell .history-queue-number { font-size: 12px; }
+.staff-shell .audit-copy p { font-size: 13px; }
+.staff-shell .audit-copy small,
+.staff-shell .audit-status { font-size: 11px; }
+
+@media (max-width: 560px) {
+  .landing-refresh .landing-nav .button { font-size: 14px; }
+  .landing-refresh .landing-hero-copy > p { font-size: 17px; }
+}

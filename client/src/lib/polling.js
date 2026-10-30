@@ -1,0 +1,1 @@
+export const LIVE_POLL_INTERVAL_MS = 2500;
