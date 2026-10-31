@@ -113,7 +113,14 @@ update public.users set role = 'admin' where email = 'your-email@example.com';
 
 ## Testing and deployment
 
-The API exposes `GET /api/health` for a basic deployment check. Run the server unit checks with `npm test --workspace server`. Build the client with `npm run build`. Deploy the client to Vercel with `VITE_API_URL` set to the deployed API URL; deploy the Express server to a Node-compatible host with its server environment variables.
+### Production URLs
+
+- Frontend application: [https://onequeue-itp26.vercel.app](https://onequeue-itp26.vercel.app)
+- Backend service: [https://onequeue-api.vercel.app](https://onequeue-api.vercel.app)
+- API base URL: `https://onequeue-api.vercel.app/api`
+- API health check: [https://onequeue-api.vercel.app/api/health](https://onequeue-api.vercel.app/api/health)
+
+The production frontend uses `VITE_API_URL=https://onequeue-api.vercel.app/api`. The API exposes `GET /api/health` for a basic deployment check. Run the server unit checks with `npm test --workspace server` and build the client with `npm run build` before deployment.
 
 ## Security notes
 
