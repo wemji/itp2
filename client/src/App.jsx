@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import './styles.css';
 import './security-ui.css';
 import './readability.css';
+import './glass-theme.css';
 
 const Landing = lazy(() => import('./pages/Landing'));
 const Auth = lazy(() => import('./pages/Auth'));

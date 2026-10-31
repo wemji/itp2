@@ -1,0 +1,342 @@
+:root {
+  --glass-ink: #20243d;
+  --glass-copy: #666d88;
+  --glass-accent: #5b5bd6;
+  --glass-line: #ffffffb8;
+  --glass-surface: linear-gradient(145deg, #ffffff5c, #dce5ff2e);
+  --glass-surface-strong: linear-gradient(145deg, #ffffff80, #dce5ff4d);
+  --glass-raised:
+    22px 24px 50px #7883a670,
+    -18px -18px 42px #ffffffc7,
+    inset 2px 2px 3px #ffffffe6,
+    inset -2px -2px 5px #7380a13d;
+  --glass-raised-small:
+    10px 12px 25px #7883a661,
+    -9px -9px 22px #ffffffb8,
+    inset 1px 1px 2px #ffffffe0;
+  --glass-inset:
+    inset 8px 8px 16px #8792af8f,
+    inset -8px -8px 16px #ffffffe0,
+    0 3px 10px #6572983d;
+  --glass-blur: blur(32px) saturate(190%);
+}
+
+body {
+  background: #dce2f2;
+  color: var(--glass-ink);
+}
+
+/* Public authentication and recovery pages. */
+body .auth-neu:not(.auth-register-page) {
+  background:
+    radial-gradient(circle at 78% 15%, #847dffb8 0, transparent 31%),
+    radial-gradient(circle at 10% 84%, #66dcffc7 0, transparent 30%),
+    radial-gradient(circle at 48% 46%, #f4a6d17a 0, transparent 28%),
+    linear-gradient(135deg, #d1daf0, #f0f3ff 48%, #cbd4eb);
+}
+
+body .auth-neu:not(.auth-register-page) :is(.auth-card, .auth-welcome, .recovery-preview) {
+  border: 2px solid var(--glass-line);
+  background: var(--glass-surface);
+  box-shadow: var(--glass-raised);
+  backdrop-filter: blur(40px) saturate(205%);
+  -webkit-backdrop-filter: blur(40px) saturate(205%);
+}
+
+body .auth-neu:not(.auth-register-page) .auth-welcome {
+  padding: 38px;
+  border-radius: 30px;
+}
+
+body .auth-neu:not(.auth-register-page) :is(.auth-brand, .auth-badge, .auth-card .eyebrow) {
+  border: 1px solid #ffffffcf;
+  background: #ffffff57;
+  box-shadow: var(--glass-raised-small);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+}
+
+body .auth-neu:not(.auth-register-page) .auth-card input {
+  border: 2px solid #ffffffa8;
+  background: #ffffff42;
+  box-shadow: var(--glass-inset);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+}
+
+/* Landing page. */
+body .landing-refresh {
+  background:
+    radial-gradient(circle at 86% 12%, #7c73ffc4 0, transparent 27%),
+    radial-gradient(circle at 9% 43%, #60dcffc2 0, transparent 29%),
+    radial-gradient(circle at 55% 78%, #f6a4d28c 0, transparent 31%),
+    linear-gradient(135deg, #d3dcf1, #f2f4ff 48%, #cbd4eb);
+  color: var(--glass-ink);
+}
+
+body .landing-refresh .landing-nav {
+  border: 2px solid #ffffffc7;
+  background: #ffffff45;
+  box-shadow: var(--glass-raised);
+  backdrop-filter: blur(34px) saturate(210%);
+  -webkit-backdrop-filter: blur(34px) saturate(210%);
+}
+
+body .landing-refresh :is(
+  .landing-live-card,
+  .landing-benefits article,
+  .landing-step,
+  .landing-cta,
+  .landing-footer-main,
+  .landing-footer-bottom
+) {
+  border: 2px solid #ffffffb8;
+  background: var(--glass-surface);
+  box-shadow: var(--glass-raised);
+  backdrop-filter: blur(38px) saturate(205%);
+  -webkit-backdrop-filter: blur(38px) saturate(205%);
+}
+
+body .landing-refresh :is(.landing-badge, .landing-live-metrics > div, .landing-step-icon, .benefit-icon, .landing-footer-promise) {
+  border: 1px solid #ffffffb8;
+  background: #ffffff4d;
+  box-shadow: var(--glass-raised-small);
+  backdrop-filter: blur(22px) saturate(185%);
+  -webkit-backdrop-filter: blur(22px) saturate(185%);
+}
+
+body .landing-refresh .landing-secondary-action {
+  border: 1px solid #ffffffc7;
+  background: #ffffff4d;
+  box-shadow: var(--glass-raised-small);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+body .landing-refresh .landing-footer {
+  background: transparent;
+}
+
+/* Shared role workspace and navigation surfaces. */
+body :is(.customer-shell, .staff-shell) {
+  --workspace-surface: linear-gradient(145deg, #ffffff57, #dce5ff2e);
+  background:
+    radial-gradient(circle at 84% 13%, #766effa8 0, transparent 28%),
+    radial-gradient(circle at 18% 88%, #63ddff9c 0, transparent 30%),
+    radial-gradient(circle at 57% 54%, #f4a3d36b 0, transparent 27%),
+    linear-gradient(135deg, #d3dcef, #eef2ff 48%, #ccd5eb);
+}
+
+body :is(.customer-shell, .staff-shell) .main {
+  background: transparent;
+}
+
+body :is(.customer-shell, .staff-shell) .sidebar {
+  border-right: 2px solid #ffffffa6;
+  background: linear-gradient(160deg, #ffffff66, #d6e1f23d);
+  box-shadow: 18px 0 42px #68739457, inset -1px 0 #ffffffd9;
+  backdrop-filter: blur(38px) saturate(205%);
+  -webkit-backdrop-filter: blur(38px) saturate(205%);
+}
+
+body :is(.customer-shell, .staff-shell) .topbar {
+  border-bottom: 1px solid #ffffffb8;
+  background: #ffffff42;
+  box-shadow: 0 12px 30px #7180a33d, inset 0 1px #ffffffd9;
+  backdrop-filter: blur(34px) saturate(200%);
+  -webkit-backdrop-filter: blur(34px) saturate(200%);
+}
+
+body :is(.customer-shell, .staff-shell) :is(.nav-link, .user-mini, .logout, .topbar-user, .menu) {
+  border: 1px solid transparent;
+  background: #ffffff26;
+  backdrop-filter: blur(18px) saturate(175%);
+  -webkit-backdrop-filter: blur(18px) saturate(175%);
+}
+
+body :is(.customer-shell, .staff-shell) .nav-link:hover,
+body :is(.customer-shell, .staff-shell) .nav-link.active {
+  border-color: #ffffffb8;
+  background: #ffffff63;
+  box-shadow: var(--glass-raised-small);
+}
+
+body :is(.customer-shell, .staff-shell) .content {
+  background: transparent;
+}
+
+/* Shared raised cards across customer, staff, and administrator roles. */
+body :is(.customer-shell, .staff-shell) :is(
+  .empty-card,
+  .queue-hero,
+  .step,
+  .service-card,
+  .history-card,
+  .notification,
+  .profile-summary,
+  .form-card,
+  .stat-card,
+  .chart-card,
+  .admin-callout,
+  .queue-summary,
+  .table-card,
+  .admin-service,
+  .audit-card,
+  .history-toolbar,
+  .live-queue-panel
+) {
+  border: 2px solid #ffffffb8;
+  background: var(--workspace-surface);
+  box-shadow: var(--glass-raised);
+  backdrop-filter: blur(34px) saturate(195%);
+  -webkit-backdrop-filter: blur(34px) saturate(195%);
+}
+
+body :is(.customer-shell, .staff-shell) :is(.step, .service-card, .stat-card, .admin-service, .history-card, .audit-card) {
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+body :is(.customer-shell, .staff-shell) :is(.step, .service-card, .stat-card, .admin-service, .history-card, .audit-card):hover {
+  transform: translateY(-4px);
+  border-color: #ffffffe6;
+  box-shadow:
+    27px 29px 58px #6f7b9d82,
+    -22px -22px 50px #ffffffe0,
+    inset 2px 2px 3px #ffffff;
+}
+
+body :is(.customer-shell, .staff-shell) :is(
+  .queue-metrics > div,
+  .live-stats > div,
+  .stat-icon,
+  .service-icon,
+  .notification-icon,
+  .history-status-icon,
+  .audit-icon,
+  .avatar,
+  .empty-icon
+) {
+  border: 1px solid #ffffffb8;
+  background: #ffffff45;
+  box-shadow: var(--glass-raised-small);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+}
+
+body :is(.customer-shell, .staff-shell) .content :is(input, textarea, select) {
+  border: 2px solid #ffffffa6;
+  background: #ffffff42;
+  box-shadow: var(--glass-inset);
+  color: var(--glass-ink);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+}
+
+body :is(.customer-shell, .staff-shell) .content :is(input, textarea, select):focus {
+  border-color: #6768df8f;
+  box-shadow:
+    var(--glass-inset),
+    0 0 0 4px #ffffff61,
+    0 0 0 7px #5b5bd638;
+  outline: none;
+}
+
+body :is(.customer-shell, .staff-shell) :is(.history-filters button, .actions button, .text-button) {
+  border: 1px solid #ffffffa6;
+  background: #ffffff42;
+  box-shadow: 5px 6px 13px #7883a652, -4px -4px 11px #ffffffa8;
+  backdrop-filter: blur(18px) saturate(175%);
+  -webkit-backdrop-filter: blur(18px) saturate(175%);
+}
+
+body :is(.customer-shell, .staff-shell) .history-filters button.active {
+  background: #5b5bd6c7;
+  color: #fff;
+  box-shadow: inset 4px 4px 9px #3e3e9e, inset -4px -4px 9px #7779ef;
+}
+
+body :is(.customer-shell, .staff-shell) table {
+  background: transparent;
+}
+
+body :is(.customer-shell, .staff-shell) :is(th, td) {
+  border-color: #ffffff85;
+}
+
+body :is(.customer-shell, .staff-shell) tbody tr:hover {
+  background: #ffffff38;
+}
+
+body :is(.customer-shell, .staff-shell) .status {
+  border: 1px solid #ffffff9c;
+  box-shadow: 4px 5px 12px #7782a247, -3px -3px 9px #ffffff9c;
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+}
+
+/* Glass buttons across all public and role pages. */
+body :is(.landing-refresh, .customer-shell, .staff-shell) .button {
+  border: 1px solid #ffffff80;
+  background: linear-gradient(145deg, #7776f5d9, #4646bddf);
+  box-shadow:
+    11px 13px 25px #6e789b73,
+    -9px -9px 22px #ffffffb8,
+    inset 2px 2px 3px #ffffff70,
+    inset -2px -2px 5px #3535909c;
+  backdrop-filter: blur(20px) saturate(185%);
+  -webkit-backdrop-filter: blur(20px) saturate(185%);
+}
+
+body :is(.landing-refresh, .customer-shell, .staff-shell) .button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, #8584ffeb, #5050c9eb);
+  box-shadow:
+    14px 16px 31px #65709480,
+    -11px -11px 26px #ffffffc7,
+    inset 2px 2px 3px #ffffff7d;
+}
+
+body :is(.customer-shell, .staff-shell) .button.secondary,
+body :is(.customer-shell, .staff-shell) .danger-outline {
+  border-color: #ffffffb8;
+  background: #ffffff4d;
+  color: var(--glass-accent);
+  box-shadow: var(--glass-raised-small);
+}
+
+/* Confirmation and reauthentication dialogs. */
+body .confirm-backdrop {
+  background: #28305273;
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+
+body .confirm-dialog {
+  border: 2px solid #ffffffc7;
+  background: linear-gradient(145deg, #ffffff80, #dce5ff52);
+  box-shadow:
+    30px 34px 72px #17203d80,
+    -18px -18px 48px #ffffff70,
+    inset 2px 2px 4px #ffffffeb;
+  backdrop-filter: blur(42px) saturate(205%);
+  -webkit-backdrop-filter: blur(42px) saturate(205%);
+}
+
+body .confirm-dialog input {
+  border: 2px solid #ffffffa6;
+  background: #ffffff45;
+  box-shadow: var(--glass-inset);
+}
+
+@media (max-width: 860px) {
+  body .auth-neu:not(.auth-register-page) .auth-welcome { display: none; }
+  body :is(.customer-shell, .staff-shell) .sidebar {
+    box-shadow: 22px 0 48px #43507175;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body :is(.customer-shell, .staff-shell) :is(.step, .service-card, .stat-card, .admin-service, .history-card, .audit-card) {
+    transition: none;
+  }
+}
