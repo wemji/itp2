@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
 import LoadingButton from '../components/LoadingButton';
+import ErrorState from '../components/ErrorState';
+import { CardGridSkeleton, CustomerDashboardSkeleton } from '../components/Skeletons';
 
 function useLoad(path) {
   const [rows, setRows] = useState([]);
@@ -17,12 +19,16 @@ function useLoad(path) {
     .catch((loadError) => setError(loadError.message))
     .finally(() => setLoading(false)), [path]);
   useEffect(() => { load(); }, [load]);
-  return { rows, error, loading, load };
+  const retry = useCallback(() => {
+    setLoading(true);
+    return load();
+  }, [load]);
+  return { rows, error, loading, load, retry };
 }
 
 export function Dashboard() {
   const { profile } = useAuth();
-  const { rows: queues, error, loading, load } = useLoad('/queues');
+  const { rows: queues, error, loading, load, retry } = useLoad('/queues');
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState('');
   const [confirmCancel, setConfirmCancel] = useState(false);
@@ -53,9 +59,11 @@ export function Dashboard() {
         <div><div className="eyebrow">CUSTOMER DASHBOARD</div><h1>Welcome, {profile?.name?.split(' ')[0] || 'there'}.</h1><p className="muted">Your services and queue updates, all in one place.</p></div>
         <Link className="button" to="/services">Find a service <ArrowRight size={16} /></Link>
       </div>
-      <Toast message={error || cancelError} />
+      {(queues.length > 0 || cancelError) && <Toast message={cancelError || error} />}
       {loading ? (
-        <div className="empty-card loading-card"><span className="spinner" /></div>
+        <CustomerDashboardSkeleton />
+      ) : error && !queues.length ? (
+        <ErrorState message={error} onRetry={retry} retrying={loading} />
       ) : active ? (
         <section className="queue-hero">
           <div className="eyebrow">YOUR ACTIVE QUEUE · {active.services?.name}</div>
@@ -98,7 +106,7 @@ export function Dashboard() {
 }
 
 export function Services() {
-  const { rows: services, error, loading, load } = useLoad('/services');
+  const { rows: services, error, loading, load, retry } = useLoad('/services');
   const [busy, setBusy] = useState('');
   const [message, setMessage] = useState('');
 
@@ -119,9 +127,12 @@ export function Services() {
   return (
     <>
       <div className="page-heading"><div><div className="eyebrow">SERVICE DIRECTORY</div><h1>Find a service</h1><p className="muted">Check current wait estimates and join an open queue.</p></div></div>
-      <Toast message={error || message} />
+      {services.length > 0 && <Toast message={error} />}
+      <Toast message={message} />
       {loading ? (
-        <div className="empty-card loading-card"><span className="spinner" /></div>
+        <CardGridSkeleton />
+      ) : error && !services.length ? (
+        <ErrorState message={error} onRetry={retry} retrying={loading} />
       ) : services.length ? (
         <div className="service-grid">
           {services.map((service) => (

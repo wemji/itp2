@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   BellRing,
@@ -14,6 +14,8 @@ import { api } from '../lib/api';
 import { LIVE_POLL_INTERVAL_MS } from '../lib/polling';
 import { supabase } from '../lib/supabase';
 import Toast from '../components/Toast';
+import ErrorState from '../components/ErrorState';
+import { DetailSkeleton } from '../components/Skeletons';
 
 const statusLabels = {
   WAITING: 'WAITING',
@@ -44,18 +46,21 @@ export default function LiveQueue() {
   const { id } = useParams();
   const [queue, setQueue] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async ({ showLoading = false } = {}) => {
+    if (showLoading) setLoading(true);
+    try {
+      setQueue(await api(`/queues/${id}`));
+      setError('');
+    } catch (loadError) {
+      setError(loadError.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
-    let mounted = true;
-    const load = () => api(`/queues/${id}`)
-      .then((data) => {
-        if (mounted) {
-          setQueue(data);
-          setError('');
-        }
-      })
-      .catch((loadError) => mounted && setError(loadError.message));
-
     load();
     const timer = setInterval(load, LIVE_POLL_INTERVAL_MS);
     const channel = supabase
@@ -64,16 +69,15 @@ export default function LiveQueue() {
       .subscribe();
 
     return () => {
-      mounted = false;
       clearInterval(timer);
       supabase.removeChannel(channel);
     };
-  }, [id]);
+  }, [id, load]);
 
   if (error && !queue) {
-    return <><Link to="/dashboard" className="back-link"><ChevronLeft size={17} />Back to dashboard</Link><Toast message={error} /></>;
+    return <><Link to="/dashboard" className="back-link"><ChevronLeft size={17} />Back to dashboard</Link><ErrorState message={error} onRetry={() => load({ showLoading: true })} retrying={loading} /></>;
   }
-  if (!queue) return <div className="center-screen"><span className="spinner" /></div>;
+  if (!queue) return <DetailSkeleton />;
 
   const terminal = ['COMPLETED', 'CANCELLED', 'NO-SHOW'].includes(queue.status);
   const waitLabel = terminal

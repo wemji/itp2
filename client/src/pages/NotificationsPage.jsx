@@ -3,13 +3,22 @@ import { Bell, CheckCheck } from 'lucide-react';
 import { api } from '../lib/api';
 import LoadingButton from '../components/LoadingButton';
 import Toast from '../components/Toast';
+import ErrorState from '../components/ErrorState';
+import { ListSkeleton } from '../components/Skeletons';
 
 export default function NotificationsPage() {
   const [items, setItems] = useState([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const load = () => api('/notifications').then(setItems).catch((loadError) => setError(loadError.message));
+  const load = () => {
+    setLoading(true);
+    return api('/notifications')
+      .then((data) => { setItems(data); setError(''); })
+      .catch((loadError) => setError(loadError.message))
+      .finally(() => setLoading(false));
+  };
   useEffect(() => { load(); }, []);
 
   async function markRead(id) {
@@ -61,8 +70,10 @@ export default function NotificationsPage() {
           </LoadingButton>
         )}
       </div>
-      <Toast message={error} />
-      <div className="notification-list">
+      {items.length > 0 && <Toast message={error} />}
+      {loading && !items.length ? <ListSkeleton items={5} variant="notifications" /> : error && !items.length ? (
+        <ErrorState message={error} onRetry={load} retrying={loading} />
+      ) : <div className="notification-list">
         {items.length ? items.map((notification) => (
           <article className={notification.is_read ? 'notification read' : 'notification'} key={notification.id}>
             <div className="notification-icon"><Bell size={18} /></div>
@@ -91,7 +102,7 @@ export default function NotificationsPage() {
             <p className="muted">New queue updates will appear here.</p>
           </div>
         )}
-      </div>
+      </div>}
     </>
   );
 }

@@ -2,11 +2,14 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import FormValidationEnhancer from './components/FormValidationEnhancer';
+import { RouteSkeleton } from './components/Skeletons';
 import { AuthProvider } from './context/AuthContext';
 import './styles.css';
 import './security-ui.css';
 import './readability.css';
 import './glass-theme.css';
+import './feedback.css';
 
 const Landing = lazy(() => import('./pages/Landing'));
 const Auth = lazy(() => import('./pages/Auth'));
@@ -27,12 +30,13 @@ const CounterManagement = lazy(() => import('./pages/AdminExtras').then((module)
 const StaffManagement = lazy(() => import('./pages/AdminExtras').then((module) => ({ default: module.StaffManagement })));
 
 function RouteFallback() {
-  return <div className="center-screen"><span className="spinner" /></div>;
+  return <RouteSkeleton />;
 }
 
 export default function App() {
   return (
     <AuthProvider>
+      <FormValidationEnhancer />
       <BrowserRouter>
         <Suspense fallback={<RouteFallback />}>
           <Routes>

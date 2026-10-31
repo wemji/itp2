@@ -42,8 +42,8 @@ export default function Profile() {
       <div className="profile-layout">
         <form className="form-card" onSubmit={save}>
           <h2>Personal information</h2>
-          {error && <Toast message={error} />}
-          {message && <div className="success-alert">{message}</div>}
+          <Toast message={error} onDismiss={() => setError('')} />
+          <Toast message={message} type="success" onDismiss={() => setMessage('')} />
           <label>Display name<input required minLength="2" maxLength="80" value={name} onChange={(event) => setName(event.target.value)} /></label>
           <label>Email<input disabled value={profile?.email || ''} /></label>
           <label>Role<input disabled value={profile?.role || ''} /></label>

@@ -1,2 +1,13 @@
-import { Navigate, Outlet } from 'react-router-dom'; import { useAuth } from '../context/AuthContext';
-export default function ProtectedRoute({ staffOnly = false, adminOnly = false }) { const { profile, mfaVerified, loading } = useAuth(); if (loading) return <div className="center-screen"><span className="spinner"/></div>; if (!profile) return <Navigate to="/login" replace />; if ((staffOnly || adminOnly) && ['admin', 'staff'].includes(profile.role) && mfaVerified === false) return <Navigate to="/mfa" replace />; if (adminOnly && profile.role !== 'admin') return <Navigate to="/admin" replace />; if (staffOnly && !['admin', 'staff'].includes(profile.role)) return <Navigate to="/dashboard" replace />; return <Outlet />; }
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { RouteSkeleton } from './Skeletons';
+
+export default function ProtectedRoute({ staffOnly = false, adminOnly = false }) {
+  const { profile, mfaVerified, loading } = useAuth();
+  if (loading) return <RouteSkeleton />;
+  if (!profile) return <Navigate to="/login" replace />;
+  if ((staffOnly || adminOnly) && ['admin', 'staff'].includes(profile.role) && mfaVerified === false) return <Navigate to="/mfa" replace />;
+  if (adminOnly && profile.role !== 'admin') return <Navigate to="/admin" replace />;
+  if (staffOnly && !['admin', 'staff'].includes(profile.role)) return <Navigate to="/dashboard" replace />;
+  return <Outlet />;
+}

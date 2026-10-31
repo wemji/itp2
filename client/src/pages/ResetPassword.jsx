@@ -135,13 +135,8 @@ export default function ResetPassword() {
           <h1>Choose a new password</h1>
           <p className="muted">Use at least eight characters with a letter and number, then enter it twice.</p>
 
-          <Toast message={error} />
-          {message && (
-            <div className="recovery-success" role="status">
-              <CheckCircle2 size={18} />
-              <span>{message}</span>
-            </div>
-          )}
+          <Toast message={error} onDismiss={() => setError('')} />
+          <Toast message={message} type="success" onDismiss={() => setMessage('')} />
 
           {checkingLink && (
             <div className="recovery-success" role="status">

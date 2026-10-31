@@ -68,13 +68,8 @@ export default function ForgotPassword() {
           <h1>Reset your password</h1>
           <p className="muted">Enter the email connected to your ONEQUEUE account.</p>
 
-          <Toast message={error} />
-          {message && (
-            <div className="recovery-success" role="status">
-              <CheckCircle2 size={18} />
-              <span>{message}</span>
-            </div>
-          )}
+          <Toast message={error} onDismiss={() => setError('')} />
+          <Toast message={message} type="success" onDismiss={() => setMessage('')} />
 
           <form onSubmit={submit}>
             <label>

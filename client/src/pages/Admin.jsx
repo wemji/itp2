@@ -16,23 +16,32 @@ import { LIVE_POLL_INTERVAL_MS } from '../lib/polling';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
 import LoadingButton from '../components/LoadingButton';
+import ErrorState from '../components/ErrorState';
+import { DashboardSkeleton, ListSkeleton, TableSkeleton } from '../components/Skeletons';
 
 export function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [activity, setActivity] = useState([]);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    Promise.all([api('/dashboard'), api('/dashboard/activity')])
+  const load = () => {
+    setLoading(true);
+    return Promise.all([api('/dashboard'), api('/dashboard/activity')])
       .then(([summary, chart]) => {
         setStats(summary);
         setActivity(chart);
+        setError('');
       })
-      .catch((loadError) => setError(loadError.message));
-  }, []);
+      .catch((loadError) => setError(loadError.message))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { load(); }, []);
 
   if (!stats) {
-    return <div className="center-screen">{error ? <Toast message={error} /> : <span className="spinner" />}</div>;
+    if (loading) return <DashboardSkeleton />;
+    return <ErrorState message={error} onRetry={load} retrying={loading} />;
   }
 
   const cards = [
@@ -95,7 +104,7 @@ export function QueueManagement() {
   const [pending, setPending] = useState(null);
 
   const load = () => api('/queues')
-    .then(setQueues)
+    .then((data) => { setQueues(data); setError(''); })
     .catch((loadError) => setError(loadError.message))
     .finally(() => setLoading(false));
 
@@ -149,19 +158,18 @@ export function QueueManagement() {
           <RefreshCw size={16} /> Refresh
         </LoadingButton>
       </div>
-      <Toast message={error} />
+      {queues.length > 0 && <Toast message={error} />}
       <div className="queue-summary">
         <strong>{active.length}</strong><span>active customers</span><i />
         <span>{active.filter((queue) => queue.status === 'WAITING').length} waiting</span>
         <span>{active.filter((queue) => queue.status === 'SERVING').length} serving</span>
       </div>
-      <div className="table-card">
-        <table>
+      {loading && !queues.length ? <TableSkeleton columns={6} rows={5} /> : error && !queues.length ? (
+        <ErrorState compact message={error} onRetry={() => { setLoading(true); load(); }} retrying={loading} />
+      ) : <div className="table-card"><table>
           <thead><tr><th>Queue</th><th>Customer</th><th>Service</th><th>Joined</th><th>Status</th><th>Next action</th></tr></thead>
           <tbody>
-            {loading ? (
-              <tr><td colSpan="6" className="empty-table"><span className="spinner" /></td></tr>
-            ) : active.length ? active.map((queue) => (
+            {active.length ? active.map((queue) => (
               <tr key={queue.id}>
                 <td><strong className="queue-code">{queue.queue_number}</strong></td>
                 <td>{queue.users?.name}</td>
@@ -179,8 +187,7 @@ export function QueueManagement() {
               </tr>
             )) : <tr><td colSpan="6" className="empty-table">No active customers right now. New queue entries will appear here.</td></tr>}
           </tbody>
-        </table>
-      </div>
+        </table></div>}
       <ConfirmDialog
         open={Boolean(pending)}
         title={pending?.title}
@@ -241,8 +248,12 @@ export function ServiceManagement() {
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState(EMPTY_SERVICE_FORM);
   const [pending, setPending] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const load = () => api('/services').then(setServices).catch((loadError) => setError(loadError.message));
+  const load = () => api('/services')
+    .then((data) => { setServices(data); setError(''); })
+    .catch((loadError) => setError(loadError.message))
+    .finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
   async function submit(event) {
@@ -307,7 +318,7 @@ export function ServiceManagement() {
   return (
     <>
       <div className="page-heading"><div><div className="eyebrow">CONFIGURATION</div><h1>Services</h1><p className="muted">Set up the services customers can join and keep hours easy to find.</p></div></div>
-      <Toast message={error} />
+      {services.length > 0 && <Toast message={error} />}
       <div className="two-col service-management-layout">
         <form className="form-card service-form-card" onSubmit={submit}>
           <div className="form-card-heading">
@@ -346,7 +357,9 @@ export function ServiceManagement() {
         <div>
           <h2 className="list-heading">All services <span>{services.length}</span></h2>
           <div className="service-admin-list">
-            {services.map((service) => (
+            {loading && !services.length ? <ListSkeleton items={4} variant="configuration" /> : error && !services.length ? (
+              <ErrorState compact message={error} onRetry={() => { setLoading(true); load(); }} retrying={loading} />
+            ) : services.map((service) => (
               <article className="admin-service" key={service.id}>
                 <div className="service-icon">{service.name[0]}</div>
                 <div className="admin-service-copy"><strong>{service.name}</strong><p>{service.description || 'No description added'}</p><small>{service.location || 'Location not set'} · {service.operating_hours} · {service.average_service_time} min average</small></div>

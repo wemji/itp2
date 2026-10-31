@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
 import LoadingButton from '../components/LoadingButton';
+import ErrorState from '../components/ErrorState';
+import { ListSkeleton } from '../components/Skeletons';
 
 export function CounterManagement() {
   const [rows, setRows] = useState([]);
@@ -11,9 +13,13 @@ export function CounterManagement() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ service_id: '', counter_name: '', staff_id: '' });
 
-  const load = () => api('/counters').then(setRows).catch((loadError) => setError(loadError.message));
+  const load = () => api('/counters')
+    .then((data) => { setRows(data); setError(''); })
+    .catch((loadError) => setError(loadError.message))
+    .finally(() => setLoading(false));
   useEffect(() => {
     load();
     api('/services').then(setServices).catch((loadError) => setError(loadError.message));
@@ -57,7 +63,7 @@ export function CounterManagement() {
   return (
     <>
       <div className="page-heading"><div><div className="eyebrow">CONFIGURATION</div><h1>Service counters</h1><p className="muted">Connect counters to services and keep track of their availability.</p></div></div>
-      <Toast message={error} />
+      {rows.length > 0 && <Toast message={error} />}
       <div className="two-col">
         <form className="form-card" onSubmit={submit}>
           <h2>Add counter</h2>
@@ -70,7 +76,9 @@ export function CounterManagement() {
         <div>
           <h2 className="list-heading">All counters <span>{rows.length}</span></h2>
           <div className="service-admin-list">
-            {rows.length ? rows.map((row) => (
+            {loading && !rows.length ? <ListSkeleton items={4} variant="configuration" /> : error && !rows.length ? (
+              <ErrorState compact message={error} onRetry={() => { setLoading(true); load(); }} retrying={loading} />
+            ) : rows.length ? rows.map((row) => (
               <article className="admin-service" key={row.id}>
                 <div className="service-icon">C</div>
                 <div className="admin-service-copy"><strong>{row.counter_name}</strong><p>{row.services?.name}</p><small>{row.users?.name || 'No staff assigned'}</small></div>
@@ -102,9 +110,13 @@ export function StaffManagement() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'staff' });
 
-  const load = () => api('/staff').then(setRows).catch((loadError) => setError(loadError.message));
+  const load = () => api('/staff')
+    .then((data) => { setRows(data); setError(''); })
+    .catch((loadError) => setError(loadError.message))
+    .finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
   function submit(event) {
@@ -182,7 +194,7 @@ export function StaffManagement() {
   return (
     <>
       <div className="page-heading"><div><div className="eyebrow">ADMINISTRATION</div><h1>Staff accounts</h1><p className="muted">Manage access for the team running your service center.</p></div></div>
-      <Toast message={error} />
+      {rows.length > 0 && <Toast message={error} />}
       <div className="two-col">
         <form className="form-card" onSubmit={submit}>
           <h2>Add a team member</h2>
@@ -197,7 +209,9 @@ export function StaffManagement() {
         <div>
           <h2 className="list-heading">Team members <span>{rows.length}</span></h2>
           <div className="service-admin-list">
-            {rows.map((row) => (
+            {loading && !rows.length ? <ListSkeleton items={4} variant="staff" /> : error && !rows.length ? (
+              <ErrorState compact message={error} onRetry={() => { setLoading(true); load(); }} retrying={loading} />
+            ) : rows.map((row) => (
               <article className="admin-service staff-account-card" key={row.id}>
                 <div className="avatar">{row.name?.[0]?.toUpperCase()}</div>
                 <div className="admin-service-copy"><strong>{row.name}</strong><p>{row.email}</p><small>Added {new Date(row.created_at).toLocaleDateString()}</small></div>

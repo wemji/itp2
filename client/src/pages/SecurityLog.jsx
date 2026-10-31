@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Activity, ShieldCheck } from 'lucide-react';
 import { api } from '../lib/api';
 import Toast from '../components/Toast';
+import ErrorState from '../components/ErrorState';
+import { ListSkeleton } from '../components/Skeletons';
 
 function actionLabel(action) {
   return String(action || '').replace('.', ' · ').replaceAll('_', ' ');
@@ -12,21 +14,26 @@ export default function SecurityLog() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api('/audit-logs?limit=100')
-      .then(setItems)
+  const load = () => {
+    setLoading(true);
+    return api('/audit-logs?limit=100')
+      .then((data) => { setItems(data); setError(''); })
       .catch((loadError) => setError(loadError.message))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []);
 
   return (
     <>
       <div className="page-heading">
         <div><div className="eyebrow">SECURITY &amp; ACCOUNTABILITY</div><h1>Security log</h1><p className="muted">Review recent administrative and operational changes.</p></div>
       </div>
-      <Toast message={error} />
+      {items.length > 0 && <Toast message={error} />}
       {loading ? (
-        <div className="empty-card loading-card"><span className="spinner" /></div>
+        <ListSkeleton items={6} variant="audit" />
+      ) : error && !items.length ? (
+        <ErrorState message={error} onRetry={load} retrying={loading} />
       ) : items.length ? (
         <div className="audit-list">
           {items.map((item) => (

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { CalendarDays, CheckCircle2, Clock3, History as HistoryIcon, Search, XCircle } from 'lucide-react';
 import { api } from '../lib/api';
 import Toast from '../components/Toast';
+import ErrorState from '../components/ErrorState';
+import { ListSkeleton } from '../components/Skeletons';
 
 const filters = ['ALL', 'COMPLETED', 'CANCELLED', 'NO-SHOW'];
 
@@ -16,14 +18,19 @@ export default function History() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let mounted = true;
-    api('/history')
-      .then((data) => mounted && setItems(data))
-      .catch((loadError) => mounted && setError(loadError.message))
-      .finally(() => mounted && setLoading(false));
-    return () => { mounted = false; };
-  }, []);
+  async function load() {
+    setLoading(true);
+    try {
+      setItems(await api('/history'));
+      setError('');
+    } catch (loadError) {
+      setError(loadError.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { load(); }, []);
 
   const visibleItems = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -48,9 +55,9 @@ export default function History() {
         </div>
       </div>
 
-      <Toast message={error} />
+      {items.length > 0 && <Toast message={error} />}
 
-      <div className="history-toolbar">
+      {(!error || items.length > 0) && <div className="history-toolbar">
         <label className="history-search">
           <Search size={17} />
           <input
@@ -71,10 +78,12 @@ export default function History() {
             </button>
           ))}
         </div>
-      </div>
+      </div>}
 
       {loading ? (
-        <div className="empty-card loading-card"><span className="spinner" /></div>
+        <ListSkeleton items={5} variant="history" />
+      ) : error && !items.length ? (
+        <ErrorState message={error} onRetry={load} retrying={loading} />
       ) : visibleItems.length ? (
         <div className="history-list">
           {visibleItems.map((item) => {
