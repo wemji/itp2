@@ -76,7 +76,6 @@ export default function Mfa() {
     <div className="auth-page auth-neu recovery-page">
       <div className="auth-glow auth-glow-one" />
       <div className="auth-glow auth-glow-two" />
-      <div className="brand auth-brand"><BrandMark /><span>ONEQUEUE</span></div>
       <main className="auth-shell">
         <section className="auth-welcome">
           <div className="auth-badge"><span /> Privileged account protection</div>
@@ -89,6 +88,7 @@ export default function Mfa() {
           </div>
         </section>
         <section className="auth-card mfa-card">
+          <div className="brand auth-brand"><BrandMark /><span>ONEQUEUE</span></div>
           <div className="eyebrow">SECURITY VERIFICATION</div>
           <h1>{verifiedFactor ? 'Enter your security code' : 'Set up an authenticator'}</h1>
           <p className="muted">{verifiedFactor ? 'Open your authenticator app and enter the current 6-digit code.' : 'Use Google Authenticator, Microsoft Authenticator, or another TOTP app.'}</p>

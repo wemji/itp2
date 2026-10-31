@@ -49,11 +49,6 @@ export default function Auth({ register = false }) {
       <div className="auth-glow auth-glow-one" />
       <div className="auth-glow auth-glow-two" />
 
-      <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
-        <BrandMark />
-        <span>ONEQUEUE</span>
-      </Link>
-
       <main className="auth-shell">
         <section className="auth-welcome" aria-label="ONEQUEUE benefits">
           <div className="auth-badge"><span /> Smart queue access</div>
@@ -67,6 +62,10 @@ export default function Auth({ register = false }) {
         </section>
 
         <section className="auth-card">
+          <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
+            <BrandMark />
+            <span>ONEQUEUE</span>
+          </Link>
           <div className="eyebrow">{register ? 'CREATE YOUR ACCOUNT' : 'WELCOME BACK'}</div>
           <h1>{register ? 'Join ONEQUEUE' : 'Sign in to continue'}</h1>
           <p className="muted">

@@ -37,11 +37,6 @@ export default function ForgotPassword() {
       <div className="auth-glow auth-glow-one" />
       <div className="auth-glow auth-glow-two" />
 
-      <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
-        <BrandMark />
-        <span>ONEQUEUE</span>
-      </Link>
-
       <main className="auth-shell">
         <section className="auth-welcome" aria-label="Password recovery information">
           <div className="auth-badge"><span /> Secure account recovery</div>
@@ -65,6 +60,10 @@ export default function ForgotPassword() {
         </section>
 
         <section className="auth-card">
+          <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
+            <BrandMark />
+            <span>ONEQUEUE</span>
+          </Link>
           <div className="eyebrow">ACCOUNT RECOVERY</div>
           <h1>Reset your password</h1>
           <p className="muted">Enter the email connected to your ONEQUEUE account.</p>

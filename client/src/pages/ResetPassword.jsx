@@ -104,11 +104,6 @@ export default function ResetPassword() {
       <div className="auth-glow auth-glow-one" />
       <div className="auth-glow auth-glow-two" />
 
-      <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
-        <BrandMark />
-        <span>ONEQUEUE</span>
-      </Link>
-
       <main className="auth-shell">
         <section className="auth-welcome" aria-label="New password guidance">
           <div className="auth-badge"><span /> Final recovery step</div>
@@ -132,6 +127,10 @@ export default function ResetPassword() {
         </section>
 
         <section className="auth-card">
+          <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
+            <BrandMark />
+            <span>ONEQUEUE</span>
+          </Link>
           <div className="eyebrow">ACCOUNT RECOVERY</div>
           <h1>Choose a new password</h1>
           <p className="muted">Use at least eight characters with a letter and number, then enter it twice.</p>
