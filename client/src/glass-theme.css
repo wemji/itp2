@@ -119,7 +119,20 @@ body .landing-refresh .landing-footer {
 
 /* Shared role workspace and navigation surfaces. */
 body :is(.customer-shell, .staff-shell) {
-  --workspace-surface: linear-gradient(145deg, #ffffff57, #dce5ff2e);
+  --workspace-surface: linear-gradient(145deg, #fafbfeF2, #e8ebf3ed);
+  --workspace-raised:
+    18px 20px 42px #b8bdccbd,
+    -16px -16px 38px #ffffff,
+    inset 2px 2px 3px #ffffff,
+    inset -2px -2px 4px #c4c8d4a3;
+  --workspace-raised-small:
+    7px 8px 17px #bcc1cfb8,
+    -6px -6px 15px #ffffff,
+    inset 1px 1px 2px #ffffff;
+  --workspace-inset:
+    inset 7px 7px 15px #c1c6d4,
+    inset -7px -7px 15px #ffffff,
+    0 2px 6px #b7bcc947;
   background:
     radial-gradient(circle at 84% 13%, #766effa8 0, transparent 28%),
     radial-gradient(circle at 18% 88%, #63ddff9c 0, transparent 30%),
@@ -132,33 +145,33 @@ body :is(.customer-shell, .staff-shell) .main {
 }
 
 body :is(.customer-shell, .staff-shell) .sidebar {
-  border-right: 2px solid #ffffffa6;
-  background: linear-gradient(160deg, #ffffff66, #d6e1f23d);
-  box-shadow: 18px 0 42px #68739457, inset -1px 0 #ffffffd9;
-  backdrop-filter: blur(38px) saturate(205%);
-  -webkit-backdrop-filter: blur(38px) saturate(205%);
+  border-right: 2px solid #ffffff;
+  background: linear-gradient(160deg, #f8f9fdf5, #e8ebf3f2);
+  box-shadow: 16px 0 36px #aeb4c37a, inset -1px 0 #ffffff;
+  backdrop-filter: blur(30px) saturate(105%);
+  -webkit-backdrop-filter: blur(30px) saturate(105%);
 }
 
 body :is(.customer-shell, .staff-shell) .topbar {
-  border-bottom: 1px solid #ffffffb8;
-  background: #ffffff42;
-  box-shadow: 0 12px 30px #7180a33d, inset 0 1px #ffffffd9;
-  backdrop-filter: blur(34px) saturate(200%);
-  -webkit-backdrop-filter: blur(34px) saturate(200%);
+  border: 2px solid #ffffff;
+  background: linear-gradient(145deg, #fafbfef2, #e9ecf4ed);
+  box-shadow: var(--workspace-raised);
+  backdrop-filter: blur(28px) saturate(105%);
+  -webkit-backdrop-filter: blur(28px) saturate(105%);
 }
 
 body :is(.customer-shell, .staff-shell) :is(.nav-link, .user-mini, .logout, .topbar-user, .menu) {
   border: 1px solid transparent;
-  background: #ffffff26;
-  backdrop-filter: blur(18px) saturate(175%);
-  -webkit-backdrop-filter: blur(18px) saturate(175%);
+  background: #eef0f7d9;
+  backdrop-filter: blur(16px) saturate(100%);
+  -webkit-backdrop-filter: blur(16px) saturate(100%);
 }
 
 body :is(.customer-shell, .staff-shell) .nav-link:hover,
 body :is(.customer-shell, .staff-shell) .nav-link.active {
   border-color: #ffffffb8;
-  background: #ffffff63;
-  box-shadow: var(--glass-raised-small);
+  background: linear-gradient(145deg, #fafbfe, #e7eaf2);
+  box-shadow: var(--workspace-raised-small);
 }
 
 body :is(.customer-shell, .staff-shell) .content {
@@ -185,11 +198,11 @@ body :is(.customer-shell, .staff-shell) :is(
   .history-toolbar,
   .live-queue-panel
 ) {
-  border: 2px solid #ffffffb8;
+  border: 2px solid #ffffff;
   background: var(--workspace-surface);
-  box-shadow: var(--glass-raised);
-  backdrop-filter: blur(34px) saturate(195%);
-  -webkit-backdrop-filter: blur(34px) saturate(195%);
+  box-shadow: var(--workspace-raised);
+  backdrop-filter: blur(28px) saturate(105%);
+  -webkit-backdrop-filter: blur(28px) saturate(105%);
 }
 
 body :is(.customer-shell, .staff-shell) :is(.step, .service-card, .stat-card, .admin-service, .history-card, .audit-card) {
@@ -200,8 +213,8 @@ body :is(.customer-shell, .staff-shell) :is(.step, .service-card, .stat-card, .a
   transform: translateY(-4px);
   border-color: #ffffffe6;
   box-shadow:
-    27px 29px 58px #6f7b9d82,
-    -22px -22px 50px #ffffffe0,
+    23px 25px 50px #b1b6c6d1,
+    -19px -19px 44px #ffffff,
     inset 2px 2px 3px #ffffff;
 }
 
@@ -216,37 +229,37 @@ body :is(.customer-shell, .staff-shell) :is(
   .avatar,
   .empty-icon
 ) {
-  border: 1px solid #ffffffb8;
-  background: #ffffff45;
-  box-shadow: var(--glass-raised-small);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid #ffffff;
+  background: linear-gradient(145deg, #f8f9fd, #e7eaf2);
+  box-shadow: var(--workspace-raised-small);
+  backdrop-filter: blur(16px) saturate(100%);
+  -webkit-backdrop-filter: blur(16px) saturate(100%);
 }
 
 body :is(.customer-shell, .staff-shell) .content :is(input, textarea, select) {
-  border: 2px solid #ffffffa6;
-  background: #ffffff42;
-  box-shadow: var(--glass-inset);
+  border: 2px solid #ffffff;
+  background: linear-gradient(145deg, #e5e8f1f7, #f9fafdf7);
+  box-shadow: var(--workspace-inset);
   color: var(--glass-ink);
-  backdrop-filter: blur(22px) saturate(180%);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(100%);
+  -webkit-backdrop-filter: blur(18px) saturate(100%);
 }
 
 body :is(.customer-shell, .staff-shell) .content :is(input, textarea, select):focus {
   border-color: #6768df8f;
   box-shadow:
-    var(--glass-inset),
+    var(--workspace-inset),
     0 0 0 4px #ffffff61,
     0 0 0 7px #5b5bd638;
   outline: none;
 }
 
 body :is(.customer-shell, .staff-shell) :is(.history-filters button, .actions button, .text-button) {
-  border: 1px solid #ffffffa6;
-  background: #ffffff42;
-  box-shadow: 5px 6px 13px #7883a652, -4px -4px 11px #ffffffa8;
-  backdrop-filter: blur(18px) saturate(175%);
-  -webkit-backdrop-filter: blur(18px) saturate(175%);
+  border: 1px solid #ffffff;
+  background: linear-gradient(145deg, #f8f9fd, #e7eaf2);
+  box-shadow: var(--workspace-raised-small);
+  backdrop-filter: blur(16px) saturate(100%);
+  -webkit-backdrop-filter: blur(16px) saturate(100%);
 }
 
 body :is(.customer-shell, .staff-shell) .history-filters button.active {
@@ -264,7 +277,7 @@ body :is(.customer-shell, .staff-shell) :is(th, td) {
 }
 
 body :is(.customer-shell, .staff-shell) tbody tr:hover {
-  background: #ffffff38;
+  background: #f4f5f9;
 }
 
 body :is(.customer-shell, .staff-shell) .status {
@@ -298,10 +311,12 @@ body :is(.landing-refresh, .customer-shell, .staff-shell) .button:hover {
 
 body :is(.customer-shell, .staff-shell) .button.secondary,
 body :is(.customer-shell, .staff-shell) .danger-outline {
-  border-color: #ffffffb8;
-  background: #ffffff4d;
+  border-color: #ffffff;
+  background: linear-gradient(145deg, #f8f9fd, #e7eaf2);
   color: var(--glass-accent);
-  box-shadow: var(--glass-raised-small);
+  box-shadow: var(--workspace-raised-small);
+  backdrop-filter: blur(16px) saturate(100%);
+  -webkit-backdrop-filter: blur(16px) saturate(100%);
 }
 
 /* Confirmation and reauthentication dialogs. */
