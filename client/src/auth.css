@@ -157,6 +157,101 @@
   box-shadow: 16px 16px 38px #c9ccd9, -16px -16px 38px #fff;
 }
 
+/* Registration-only: strong neumorphism layered with frosted glass. */
+.auth-neu.auth-register-page {
+  background:
+    radial-gradient(circle at 78% 18%, #bfc5ff78 0, transparent 27%),
+    radial-gradient(circle at 17% 82%, #ffffffd9 0, transparent 30%),
+    linear-gradient(135deg, #e9ecf6 0%, #f4f5fa 48%, #e5e8f4 100%);
+}
+
+.auth-neu.auth-register-page .auth-glow-one {
+  top: -190px;
+  right: -120px;
+  background: radial-gradient(circle, #aeb5ff8f 0, #dfe2ff58 39%, transparent 72%);
+  filter: blur(8px);
+}
+
+.auth-neu.auth-register-page .auth-glow-two {
+  bottom: -260px;
+  left: -170px;
+  background: radial-gradient(circle, #ffffffed 0, #dfe4f48a 48%, transparent 72%);
+  filter: blur(10px);
+}
+
+.auth-neu.auth-register-page .auth-card {
+  border: 1px solid #ffffffd9;
+  background: linear-gradient(145deg, #f8f9ff9c, #e9ecf77d);
+  box-shadow:
+    24px 24px 52px #b9bdcf9e,
+    -20px -20px 48px #ffffff,
+    inset 1px 1px 1px #ffffffd9,
+    inset -1px -1px 1px #b9becd52;
+  backdrop-filter: blur(24px) saturate(145%);
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+}
+
+.auth-neu.auth-register-page .auth-brand {
+  border-color: #ffffffeb;
+  background: linear-gradient(145deg, #ffffffb8, #e8ebf69c);
+  box-shadow:
+    9px 10px 22px #b9bdcf9e,
+    -8px -8px 20px #ffffff,
+    inset 1px 1px 1px #ffffff;
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+
+.auth-neu.auth-register-page .auth-badge,
+.auth-neu.auth-register-page .auth-card .eyebrow {
+  border: 1px solid #ffffff82;
+  background: #f7f8ff5c;
+  box-shadow:
+    inset 6px 6px 12px #c9cddca8,
+    inset -6px -6px 12px #ffffffd9,
+    0 7px 18px #c4c8d43d;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.auth-neu.auth-register-page .auth-card input {
+  border-color: #ffffffa6;
+  background: linear-gradient(145deg, #edf0f9a6, #ffffff85);
+  box-shadow:
+    inset 7px 7px 14px #c4c8d8c7,
+    inset -7px -7px 14px #ffffff,
+    0 1px 1px #ffffff;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.auth-neu.auth-register-page .auth-card input:focus {
+  border-color: #6868df8c;
+  box-shadow:
+    inset 7px 7px 14px #c4c8d8c7,
+    inset -7px -7px 14px #ffffff,
+    0 0 0 4px #6262d61f,
+    0 8px 20px #7779df20;
+}
+
+.auth-neu.auth-register-page .auth-card .button {
+  border-color: #ffffff78;
+  background: linear-gradient(145deg, #6969e7, #5050c8);
+  box-shadow:
+    10px 11px 22px #b9bdcf,
+    -9px -9px 20px #ffffff,
+    inset 1px 1px 2px #ffffff5c,
+    inset -2px -2px 4px #3e3e9e8c;
+}
+
+.auth-neu.auth-register-page .auth-card .button:hover {
+  background: linear-gradient(145deg, #7373ed, #4c4cbd);
+  box-shadow:
+    12px 13px 26px #b4b8ca,
+    -10px -10px 23px #ffffff,
+    inset 1px 1px 2px #ffffff70;
+}
+
 .auth-neu .auth-card .eyebrow {
   display: inline-flex;
   padding: 8px 11px;

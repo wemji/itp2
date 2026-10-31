@@ -45,7 +45,7 @@ export default function Auth({ register = false }) {
   }
 
   return (
-    <div className="auth-page auth-neu">
+    <div className={`auth-page auth-neu${register ? ' auth-register-page' : ''}`}>
       <div className="auth-glow auth-glow-one" />
       <div className="auth-glow auth-glow-two" />
 
