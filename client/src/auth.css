@@ -39,27 +39,38 @@
 .auth-neu .auth-brand {
   position: absolute;
   z-index: 5;
-  top: 28px;
-  left: 38px;
-  padding: 10px 15px 10px 10px;
-  border: 1px solid #ffffffad;
-  border-radius: 16px;
-  background: #eef0f7c7;
-  box-shadow: 7px 7px 16px #c9ccd9, -7px -7px 16px #fff;
+  top: 30px;
+  left: max(28px, calc(50% - 490px));
+  gap: 11px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   color: var(--auth-ink);
-  font-size: 16px;
-  backdrop-filter: blur(12px);
+  font-size: 15px;
+  letter-spacing: -.035em;
 }
 
-.auth-neu .auth-brand .brand-mark {
-  width: 31px;
-  height: 31px;
-  border: 1px solid #ffffff9e;
-  border-radius: 10px;
-  background: var(--auth-bg);
-  box-shadow: 3px 3px 7px #c9ccd9, -3px -3px 7px #fff;
+.auth-neu a.auth-brand {
+  transition: color .18s ease, opacity .18s ease;
+}
+
+.auth-neu a.auth-brand:hover {
   color: var(--auth-accent);
-  font-size: 14px;
+}
+
+.auth-neu a.auth-brand:focus-visible {
+  border-radius: 8px;
+  outline: 2px solid #5b5bd675;
+  outline-offset: 7px;
+}
+
+.auth-neu .auth-brand .brand-logo {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 6px #1f31662d);
 }
 
 .auth-shell {
@@ -385,7 +396,8 @@
 
 @media (max-width: 560px) {
   .auth-neu.auth-page { align-items: start; padding: 100px 18px 30px; }
-  .auth-neu .auth-brand { top: 22px; left: 22px; }
+  .auth-neu .auth-brand { top: 24px; left: 18px; }
+  .auth-neu .auth-brand .brand-logo { width: 34px; height: 34px; flex-basis: 34px; }
   .auth-neu .auth-card { padding: 29px 23px; border-radius: 22px; }
   .auth-neu .auth-card h1 { font-size: 27px; }
   .recovery-preview { grid-template-columns: 48px 1fr; }
