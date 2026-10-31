@@ -44,6 +44,8 @@ The React client calls the Express API using secure session cookies and CSRF pro
 
 ### System architecture diagram
 
+See the separate [system architecture document](./docs/system-architecture.md) for the component and request-flow explanation.
+
 ```mermaid
 flowchart LR
     U[Customers, staff, and admins] --> F[React frontend on Vercel]
@@ -59,6 +61,8 @@ flowchart LR
 The schema in [`supabase/schema.sql`](./supabase/schema.sql) creates `users`, `services`, `queues`, `counters`, `notifications`, and `queue_history`. It includes foreign keys, active-queue uniqueness per customer, daily queue-number uniqueness, profile creation from Auth, and RLS policies. The `join_queue` RPC safely allocates daily queue numbers, and a unique history index prevents duplicate terminal records. Run the schema in the Supabase SQL Editor before starting the app.
 
 ### Database ERD
+
+See the separate [database ERD document](./docs/database-erd.md) for the complete relationship summary.
 
 ```mermaid
 erDiagram
