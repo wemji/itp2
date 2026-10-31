@@ -284,6 +284,34 @@ body .auth-neu .auth-card input[inputmode='numeric'][maxlength='6'] {
   animation: button-spin .7s linear infinite;
 }
 
+.brand-logo {
+  display: block;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 5px #1f31662b);
+  user-select: none;
+}
+
+.auth-brand .brand-logo {
+  width: 37px;
+  height: 37px;
+  flex-basis: 37px;
+}
+
+.sidebar .brand-logo {
+  width: 39px;
+  height: 39px;
+  flex-basis: 39px;
+}
+
+.landing-footer .brand-logo {
+  width: 35px;
+  height: 35px;
+  flex-basis: 35px;
+}
+
 button[aria-busy='true'] {
   cursor: wait;
 }
@@ -305,4 +333,13 @@ a.button:active {
 
 @media (prefers-reduced-motion: reduce) {
   .button-spinner { animation-duration: 1.4s; }
+}
+
+@media (max-width: 560px) {
+  .brand-logo,
+  .auth-brand .brand-logo {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
 }

@@ -16,6 +16,7 @@ import {
 import { api } from '../lib/api';
 import { PUBLIC_STATS_POLL_INTERVAL_MS } from '../lib/polling';
 import '../landing.css';
+import BrandMark from '../components/BrandMark';
 
 const steps = [
   [Hash, '01', 'Choose a service', 'Find the office or service you need in seconds.'],
@@ -122,7 +123,7 @@ export default function Landing() {
     <div className="landing landing-refresh">
       <nav className="landing-nav">
         <Link to="/" className="brand" aria-label="ONEQUEUE home">
-          <span className="brand-mark">O</span>
+          <BrandMark />
           <span>ONEQUEUE</span>
         </Link>
 
@@ -224,7 +225,7 @@ export default function Landing() {
         <div className="landing-footer-main">
           <div className="landing-footer-brand">
             <Link to="/" className="brand">
-              <span className="brand-mark">O</span>
+              <BrandMark />
               <span>ONEQUEUE</span>
             </Link>
             <p>Join remotely, follow your place, and arrive when your turn is near.</p>

@@ -4,6 +4,7 @@ import { ArrowLeft, CheckCircle2, LockKeyhole, Mail, ShieldCheck } from 'lucide-
 import { api } from '../lib/api';
 import Toast from '../components/Toast';
 import LoadingButton from '../components/LoadingButton';
+import BrandMark from '../components/BrandMark';
 import '../auth.css';
 
 export default function ForgotPassword() {
@@ -37,7 +38,7 @@ export default function ForgotPassword() {
       <div className="auth-glow auth-glow-two" />
 
       <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
-        <span className="brand-mark">O</span>
+        <BrandMark />
         <span>ONEQUEUE</span>
       </Link>
 

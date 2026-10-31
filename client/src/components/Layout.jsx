@@ -15,6 +15,7 @@ import {
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import LoadingButton from './LoadingButton';
+import BrandMark from './BrandMark';
 import '../customer.css';
 import '../admin.css';
 
@@ -51,7 +52,7 @@ export default function Layout() {
       <aside className={open ? 'sidebar open' : 'sidebar'}>
         <div className="sidebar-top">
           <Link to={staff ? '/admin' : '/dashboard'} className="brand">
-            <span className="brand-mark">O</span>
+            <BrandMark />
             <span>ONEQUEUE</span>
           </Link>
           <span className="workspace-label">{staff ? 'SERVICE DESK' : 'CUSTOMER PORTAL'}</span>

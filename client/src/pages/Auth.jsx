@@ -4,6 +4,7 @@ import { Check, Clock3 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import LoadingButton from '../components/LoadingButton';
+import BrandMark from '../components/BrandMark';
 import '../auth.css';
 
 export default function Auth({ register = false }) {
@@ -49,7 +50,7 @@ export default function Auth({ register = false }) {
       <div className="auth-glow auth-glow-two" />
 
       <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
-        <span className="brand-mark">O</span>
+        <BrandMark />
         <span>ONEQUEUE</span>
       </Link>
 

@@ -5,6 +5,7 @@ import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import LoadingButton from '../components/LoadingButton';
+import BrandMark from '../components/BrandMark';
 import '../auth.css';
 
 function getQrCodeSource(qrCode) {
@@ -75,7 +76,7 @@ export default function Mfa() {
     <div className="auth-page auth-neu recovery-page">
       <div className="auth-glow auth-glow-one" />
       <div className="auth-glow auth-glow-two" />
-      <div className="brand auth-brand"><span className="brand-mark">O</span><span>ONEQUEUE</span></div>
+      <div className="brand auth-brand"><BrandMark /><span>ONEQUEUE</span></div>
       <main className="auth-shell">
         <section className="auth-welcome">
           <div className="auth-badge"><span /> Privileged account protection</div>

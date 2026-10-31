@@ -4,6 +4,7 @@ import { CheckCircle2, KeyRound, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Toast from '../components/Toast';
 import LoadingButton from '../components/LoadingButton';
+import BrandMark from '../components/BrandMark';
 import '../auth.css';
 
 export default function ResetPassword() {
@@ -104,7 +105,7 @@ export default function ResetPassword() {
       <div className="auth-glow auth-glow-two" />
 
       <Link to="/" className="brand auth-brand" aria-label="Back to ONEQUEUE home">
-        <span className="brand-mark">O</span>
+        <BrandMark />
         <span>ONEQUEUE</span>
       </Link>
 
