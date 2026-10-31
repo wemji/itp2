@@ -600,6 +600,59 @@
   padding: 9px 28px 9px 11px;
 }
 
+.staff-shell .admin-service.staff-account-card {
+  display: grid;
+  grid-template-columns: 40px minmax(180px, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+}
+
+.staff-shell .staff-account-card .avatar {
+  width: 40px;
+  height: 40px;
+  flex-basis: 40px;
+}
+
+.staff-shell .staff-account-card .admin-service-copy {
+  min-width: 0;
+}
+
+.staff-shell .staff-account-card .admin-service-copy strong,
+.staff-shell .staff-account-card .admin-service-copy small {
+  display: block;
+}
+
+.staff-shell .staff-account-card .admin-service-copy p {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+
+.staff-shell .staff-account-actions {
+  display: grid;
+  grid-template-columns: minmax(124px, 150px) auto auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+body .staff-shell .staff-account-actions > select {
+  width: 100%;
+  min-width: 124px;
+  max-width: 150px;
+  min-height: 42px;
+  margin: 0;
+}
+
+.staff-shell .staff-account-actions .text-button {
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
+.staff-shell .staff-account-actions .status {
+  justify-self: end;
+}
+
 .staff-shell .text-button {
   border-radius: 9px;
   color: var(--admin-accent);
@@ -750,6 +803,8 @@
   .staff-shell .sidebar { width: 220px; }
   .staff-shell .content { padding: 52px 24px 44px; }
   .staff-shell .two-col { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); }
+  .staff-shell .admin-service.staff-account-card { grid-template-columns: 40px minmax(0, 1fr); align-items: start; }
+  .staff-shell .staff-account-actions { grid-column: 2; grid-template-columns: minmax(124px, 150px) auto 1fr; width: 100%; }
 }
 
 @media (max-width: 850px) {
@@ -790,6 +845,8 @@
   .staff-shell .table-card { margin: 0; }
   .staff-shell .form-card { padding: 22px; }
   .staff-shell .admin-service { gap: 10px; padding: 13px; }
+  .staff-shell .admin-service.staff-account-card { padding: 16px; }
+  .staff-shell .staff-account-actions { gap: 9px; }
   .staff-shell .history-filters button { flex: 0 0 auto; }
   .staff-shell .history-card { align-items: flex-start; }
   .staff-shell .history-title-row { align-items: flex-start; }
@@ -797,6 +854,12 @@
   .staff-shell .history-meta { flex-direction: column; gap: 6px; }
   .staff-shell .audit-card { align-items: flex-start; }
   .staff-shell .audit-status { display: none; }
+}
+
+@media (max-width: 480px) {
+  .staff-shell .staff-account-actions { grid-column: 1 / -1; grid-template-columns: 1fr auto; }
+  body .staff-shell .staff-account-actions > select { grid-column: 1 / -1; max-width: none; }
+  .staff-shell .staff-account-actions .status { justify-self: end; }
 }
 
 @media (prefers-reduced-motion: reduce) {

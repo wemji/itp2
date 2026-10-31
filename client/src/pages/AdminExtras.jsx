@@ -198,12 +198,14 @@ export function StaffManagement() {
           <h2 className="list-heading">Team members <span>{rows.length}</span></h2>
           <div className="service-admin-list">
             {rows.map((row) => (
-              <article className="admin-service" key={row.id}>
+              <article className="admin-service staff-account-card" key={row.id}>
                 <div className="avatar">{row.name?.[0]?.toUpperCase()}</div>
                 <div className="admin-service-copy"><strong>{row.name}</strong><p>{row.email}</p><small>Added {new Date(row.created_at).toLocaleDateString()}</small></div>
-                <select aria-label={`Role for ${row.name}`} value={row.role} disabled={row.id === profile?.id || !row.is_active} onChange={(event) => requestRole(row, event.target.value)}><option value="staff">Staff</option><option value="admin">Admin</option></select>
-                <button className="text-button" disabled={row.id === profile?.id} title={row.id === profile?.id ? 'You cannot change your own access here.' : undefined} onClick={() => requestToggle(row)}>{row.is_active ? 'Deactivate' : 'Activate'}</button>
-                <span className={`status ${row.is_active ? 'serving' : 'cancelled'}`}>{row.is_active ? 'ACTIVE' : 'INACTIVE'}</span>
+                <div className="staff-account-actions">
+                  <select aria-label={`Role for ${row.name}`} value={row.role} disabled={row.id === profile?.id || !row.is_active} onChange={(event) => requestRole(row, event.target.value)}><option value="staff">Staff</option><option value="admin">Admin</option></select>
+                  <button className="text-button" disabled={row.id === profile?.id} title={row.id === profile?.id ? 'You cannot change your own access here.' : undefined} onClick={() => requestToggle(row)}>{row.id === profile?.id ? 'Current account' : row.is_active ? 'Deactivate' : 'Activate'}</button>
+                  <span className={`status ${row.is_active ? 'serving' : 'cancelled'}`}>{row.is_active ? 'ACTIVE' : 'INACTIVE'}</span>
+                </div>
               </article>
             ))}
           </div>
