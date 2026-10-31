@@ -160,9 +160,43 @@
 /* Registration-only: strong neumorphism layered with frosted glass. */
 .auth-neu.auth-register-page {
   background:
-    radial-gradient(circle at 78% 18%, #bfc5ff78 0, transparent 27%),
-    radial-gradient(circle at 17% 82%, #ffffffd9 0, transparent 30%),
-    linear-gradient(135deg, #e9ecf6 0%, #f4f5fa 48%, #e5e8f4 100%);
+    radial-gradient(circle at 78% 17%, #9ea8ff9c 0, transparent 30%),
+    radial-gradient(circle at 12% 84%, #ffffff 0, transparent 32%),
+    linear-gradient(135deg, #dfe4f2 0%, #f4f6fc 47%, #d8deef 100%);
+}
+
+.auth-neu.auth-register-page::before,
+.auth-neu.auth-register-page::after {
+  position: absolute;
+  z-index: 0;
+  content: '';
+  pointer-events: none;
+  border: 1px solid #ffffffb8;
+  background: linear-gradient(145deg, #ffffff73, #cdd4f04a);
+  box-shadow:
+    20px 22px 46px #adb4ca73,
+    -16px -16px 40px #ffffffb8,
+    inset 1px 1px 2px #ffffffd9;
+  backdrop-filter: blur(20px) saturate(155%);
+  -webkit-backdrop-filter: blur(20px) saturate(155%);
+}
+
+.auth-neu.auth-register-page::before {
+  top: 8%;
+  left: 4%;
+  width: 310px;
+  height: 310px;
+  transform: rotate(-14deg);
+  border-radius: 76px;
+}
+
+.auth-neu.auth-register-page::after {
+  right: 3%;
+  bottom: -105px;
+  width: 390px;
+  height: 390px;
+  transform: rotate(18deg);
+  border-radius: 50%;
 }
 
 .auth-neu.auth-register-page .auth-glow-one {
@@ -180,76 +214,97 @@
 }
 
 .auth-neu.auth-register-page .auth-card {
-  border: 1px solid #ffffffd9;
-  background: linear-gradient(145deg, #f8f9ff9c, #e9ecf77d);
+  border: 2px solid #ffffffd9;
+  background: linear-gradient(145deg, #ffffff85, #e3e8f566);
   box-shadow:
-    24px 24px 52px #b9bdcf9e,
-    -20px -20px 48px #ffffff,
-    inset 1px 1px 1px #ffffffd9,
-    inset -1px -1px 1px #b9becd52;
-  backdrop-filter: blur(24px) saturate(145%);
-  -webkit-backdrop-filter: blur(24px) saturate(145%);
+    31px 32px 66px #aeb5caad,
+    -27px -27px 60px #ffffff,
+    inset 2px 2px 3px #ffffff,
+    inset -3px -3px 6px #aeb6cc66;
+  backdrop-filter: blur(34px) saturate(165%);
+  -webkit-backdrop-filter: blur(34px) saturate(165%);
+}
+
+.auth-neu.auth-register-page .auth-shell {
+  grid-template-columns: minmax(360px, 1fr) minmax(390px, 460px);
+  gap: 52px;
+  width: min(100%, 1060px);
+}
+
+.auth-neu.auth-register-page .auth-welcome {
+  padding: 43px 39px;
+  border: 2px solid #ffffffc7;
+  border-radius: 32px;
+  background: linear-gradient(145deg, #ffffff69, #e1e7f459);
+  box-shadow:
+    25px 27px 56px #aeb5ca91,
+    -22px -22px 52px #ffffff,
+    inset 2px 2px 3px #ffffffd9,
+    inset -2px -2px 4px #b2bacf57;
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
 }
 
 .auth-neu.auth-register-page .auth-brand {
-  border-color: #ffffffeb;
-  background: linear-gradient(145deg, #ffffffb8, #e8ebf69c);
+  border: 2px solid #ffffffeb;
+  background: linear-gradient(145deg, #ffffffc7, #dce2f2a6);
   box-shadow:
-    9px 10px 22px #b9bdcf9e,
-    -8px -8px 20px #ffffff,
-    inset 1px 1px 1px #ffffff;
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+    12px 14px 28px #aeb5caad,
+    -11px -11px 25px #ffffff,
+    inset 2px 2px 2px #ffffff;
+  backdrop-filter: blur(24px) saturate(175%);
+  -webkit-backdrop-filter: blur(24px) saturate(175%);
 }
 
 .auth-neu.auth-register-page .auth-badge,
 .auth-neu.auth-register-page .auth-card .eyebrow {
   border: 1px solid #ffffff82;
-  background: #f7f8ff5c;
+  background: linear-gradient(145deg, #ffffff80, #dfe4f270);
   box-shadow:
-    inset 6px 6px 12px #c9cddca8,
-    inset -6px -6px 12px #ffffffd9,
-    0 7px 18px #c4c8d43d;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+    inset 8px 8px 16px #bdc4d7b8,
+    inset -8px -8px 16px #ffffff,
+    0 9px 22px #aeb5ca52;
+  backdrop-filter: blur(18px) saturate(155%);
+  -webkit-backdrop-filter: blur(18px) saturate(155%);
 }
 
 .auth-neu.auth-register-page .auth-card input {
-  border-color: #ffffffa6;
-  background: linear-gradient(145deg, #edf0f9a6, #ffffff85);
+  min-height: 55px;
+  border: 2px solid #ffffffb8;
+  background: linear-gradient(145deg, #dfe4f094, #ffffff8c);
   box-shadow:
-    inset 7px 7px 14px #c4c8d8c7,
-    inset -7px -7px 14px #ffffff,
-    0 1px 1px #ffffff;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+    inset 10px 10px 20px #b9c0d4d1,
+    inset -10px -10px 20px #ffffff,
+    0 3px 8px #aeb5ca3d;
+  backdrop-filter: blur(16px) saturate(145%);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
 }
 
 .auth-neu.auth-register-page .auth-card input:focus {
   border-color: #6868df8c;
   box-shadow:
-    inset 7px 7px 14px #c4c8d8c7,
-    inset -7px -7px 14px #ffffff,
-    0 0 0 4px #6262d61f,
-    0 8px 20px #7779df20;
+    inset 10px 10px 20px #b9c0d4c7,
+    inset -10px -10px 20px #ffffff,
+    0 0 0 5px #6262d629,
+    0 12px 28px #7779df3b;
 }
 
 .auth-neu.auth-register-page .auth-card .button {
   border-color: #ffffff78;
   background: linear-gradient(145deg, #6969e7, #5050c8);
   box-shadow:
-    10px 11px 22px #b9bdcf,
-    -9px -9px 20px #ffffff,
-    inset 1px 1px 2px #ffffff5c,
-    inset -2px -2px 4px #3e3e9e8c;
+    14px 16px 30px #aeb5ca,
+    -12px -12px 27px #ffffff,
+    inset 2px 2px 3px #ffffff70,
+    inset -3px -3px 6px #353590a6;
 }
 
 .auth-neu.auth-register-page .auth-card .button:hover {
   background: linear-gradient(145deg, #7373ed, #4c4cbd);
   box-shadow:
-    12px 13px 26px #b4b8ca,
-    -10px -10px 23px #ffffff,
-    inset 1px 1px 2px #ffffff70;
+    17px 19px 36px #a8afc4,
+    -14px -14px 31px #ffffff,
+    inset 2px 2px 3px #ffffff80;
 }
 
 .auth-neu .auth-card .eyebrow {
@@ -489,11 +544,14 @@
 
 @media (max-width: 860px) {
   .auth-shell { grid-template-columns: 1fr; width: min(100%, 480px); }
+  .auth-neu.auth-register-page .auth-shell { grid-template-columns: 1fr; width: min(100%, 480px); }
   .auth-welcome { display: none; }
 }
 
 @media (max-width: 560px) {
   .auth-neu.auth-page { align-items: start; padding: 100px 18px 30px; }
+  .auth-neu.auth-register-page::before { top: 4%; left: -170px; }
+  .auth-neu.auth-register-page::after { right: -230px; bottom: -90px; }
   .auth-neu .auth-brand { top: 0; left: 24px; }
   .auth-neu .auth-brand .brand-logo { width: 28px; height: 28px; flex-basis: 28px; }
   .auth-neu .auth-card { padding: 29px 23px; border-radius: 22px; }
