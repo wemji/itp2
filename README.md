@@ -40,11 +40,90 @@ ONEQUEUE/
 
 ## Technology and architecture
 
-The React client calls the Express API with a Supabase access token. Express verifies the token with Supabase Auth and uses the service-role client for controlled server-side operations. Supabase PostgreSQL stores users, services, queues, counters, notifications, and history. The browser only receives the public Supabase URL and anon key; the service-role key is server-only.
+The React client calls the Express API using secure session cookies and CSRF protection. Express verifies sessions with Supabase Auth and uses the service-role client for controlled server-side operations. Supabase PostgreSQL stores users, services, queues, counters, notifications, and history. The browser only receives the public Supabase URL and anon key; the service-role key is server-only.
+
+### System architecture diagram
+
+```mermaid
+flowchart LR
+    U[Customers, staff, and admins] --> F[React frontend on Vercel]
+    F -->|HTTPS requests| A[Express API on Vercel]
+    F <-->|Live queue updates| S[Supabase Realtime]
+    A --> H[Supabase Auth]
+    A --> D[(Supabase PostgreSQL)]
+    A --> E[Resend email API]
+```
 
 ## Database design
 
 The schema in [`supabase/schema.sql`](./supabase/schema.sql) creates `users`, `services`, `queues`, `counters`, `notifications`, and `queue_history`. It includes foreign keys, active-queue uniqueness per customer, daily queue-number uniqueness, profile creation from Auth, and RLS policies. The `join_queue` RPC safely allocates daily queue numbers, and a unique history index prevents duplicate terminal records. Run the schema in the Supabase SQL Editor before starting the app.
+
+### Database ERD
+
+```mermaid
+erDiagram
+    USERS ||--o{ QUEUES : joins
+    USERS o|--o{ COUNTERS : operates
+    USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--o{ QUEUE_HISTORY : owns
+    USERS o|--o{ AUDIT_LOGS : performs
+    SERVICES ||--o{ COUNTERS : has
+    SERVICES ||--o{ QUEUES : contains
+    SERVICES ||--o{ QUEUE_HISTORY : records
+    COUNTERS o|--o{ QUEUES : handles
+    QUEUES o|--o{ NOTIFICATIONS : triggers
+    QUEUES ||--o| QUEUE_HISTORY : archives
+
+    USERS {
+        uuid id PK
+        text name
+        text email
+        user_role role
+    }
+    SERVICES {
+        uuid id PK
+        text name
+        text location
+        integer average_service_time
+        service_status status
+    }
+    COUNTERS {
+        uuid id PK
+        uuid service_id FK
+        uuid staff_id FK
+        text counter_name
+        counter_status status
+    }
+    QUEUES {
+        uuid id PK
+        uuid user_id FK
+        uuid service_id FK
+        uuid counter_id FK
+        text queue_number
+        queue_status status
+    }
+    NOTIFICATIONS {
+        uuid id PK
+        uuid user_id FK
+        uuid queue_id FK
+        text title
+        boolean is_read
+    }
+    QUEUE_HISTORY {
+        uuid id PK
+        uuid queue_id FK
+        uuid user_id FK
+        uuid service_id FK
+        queue_status status
+    }
+    AUDIT_LOGS {
+        uuid id PK
+        uuid actor_id FK
+        text action
+        text target_type
+        uuid target_id
+    }
+```
 
 ## API documentation
 
