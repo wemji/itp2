@@ -1,5 +1,76 @@
 import { useEffect, useState } from 'react';
-import { Bell, CheckCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Bell, BellRing, CheckCheck } from 'lucide-react';
 import { api } from '../lib/api';
-import Toast from '../components/Toast';
-export default function NotificationsPage(){const [items,setItems]=useState([]);const [error,setError]=useState('');const load=()=>api('/notifications').then(setItems).catch(e=>setError(e.message));useEffect(()=>{load()},[]);async function markRead(id){try{await api(`/notifications/${id}/read`,{method:'PUT'});setItems(items.map(item=>item.id===id?{...item,is_read:true}:item))}catch(e){setError(e.message)}}return <><div className="page-heading"><div><div className="eyebrow">UPDATES</div><h1>Notifications</h1><p className="muted">Important updates about your queues.</p></div>{items.some(item=>!item.is_read)&&<button className="button secondary" onClick={()=>Promise.all(items.filter(item=>!item.is_read).map(item=>markRead(item.id)))}><CheckCheck size={16}/> Mark visible as read</button>}</div><Toast message={error}/><div className="notification-list">{items.length?items.map(n=><article className={n.is_read?'notification read':'notification'} key={n.id}><div className="notification-icon"><Bell size={18}/></div><div className="notification-copy"><strong>{n.title}</strong><p>{n.message}</p><small>{new Date(n.created_at).toLocaleString()}</small></div>{!n.is_read&&<button className="text-button" onClick={()=>markRead(n.id)}>Mark read</button>}</article>):<div className="empty-card"><div className="empty-icon"><Bell/></div><h2>You’re all caught up</h2><p className="muted">New queue updates will appear here.</p></div>}</div></>}
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
+import { isStaff } from '../lib/roles';
+import { formatDateTime, timeAgo } from '../lib/format';
+import { Alert, EmptyState, Loading, PageHeader, useApi } from '../components/ui';
+
+export default function NotificationsPage() {
+  const { profile } = useAuth();
+  const staff = isStaff(profile?.role);
+  const { data, setData, error, setError, loading, reload } = useApi('/notifications', { interval: 15000, initial: [] });
+  const [filter, setFilter] = useState('all');
+  const [busy, setBusy] = useState(false);
+  const items = data || [];
+  const unread = items.filter((n) => !n.is_read);
+  const shown = filter === 'unread' ? unread : items;
+
+  useEffect(() => {
+    if (!profile?.id) return undefined;
+    const channel = supabase.channel(`notifications-${profile.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` }, reload)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [profile?.id, reload]);
+
+  async function markRead(ids) {
+    setError('');
+    try {
+      await Promise.all(ids.map((id) => api(`/notifications/${id}/read`, { method: 'PUT' })));
+      setData((current) => current.map((n) => (ids.includes(n.id) ? { ...n, is_read: true } : n)));
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function markAll() { setBusy(true); await markRead(unread.map((n) => n.id)); setBusy(false); }
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Inbox"
+        title="Notifications"
+        description={staff ? 'New tickets and queue activity for your desk.' : 'Updates about your queues, delivered as they happen.'}
+        actions={unread.length > 0 && <button className="btn btn-secondary" disabled={busy} onClick={markAll}><CheckCheck size={16} /> Mark all as read</button>}
+      />
+      <Alert message={error} />
+      <div className="card">
+        <div className="card-header">
+          <div className="tabs" role="tablist" aria-label="Filter notifications">
+            <button role="tab" aria-selected={filter === 'all'} className={filter === 'all' ? 'tab active' : 'tab'} onClick={() => setFilter('all')}>All <span className="subtle">{items.length}</span></button>
+            <button role="tab" aria-selected={filter === 'unread'} className={filter === 'unread' ? 'tab active' : 'tab'} onClick={() => setFilter('unread')}>Unread <span className="subtle">{unread.length}</span></button>
+          </div>
+        </div>
+        {loading ? <Loading /> : shown.length ? shown.map((n) => (
+          <article className={n.is_read ? 'note' : 'note unread'} key={n.id}>
+            <span className="note-icon">{n.is_read ? <Bell size={17} /> : <BellRing size={17} />}</span>
+            <div className="note-body">
+              <strong>{n.title}</strong>
+              <p>{n.message}</p>
+              <small title={formatDateTime(n.created_at)}>{timeAgo(n.created_at)}</small>
+              {n.queue_id && <Link className="link" to={staff ? '/admin/queues' : `/queue/${n.queue_id}`}>{staff ? 'Open queue console' : 'View ticket'} <ArrowRight size={13} /></Link>}
+            </div>
+            {!n.is_read && <button className="btn btn-ghost btn-sm" onClick={() => markRead([n.id])}>Mark read</button>}
+          </article>
+        )) : (
+          <EmptyState icon={Bell} title={filter === 'unread' ? 'No unread notifications' : 'You’re all caught up'}>
+            {staff ? 'New queue activity for your desk will appear here.' : 'We’ll notify you here when your queue is about to be called.'}
+          </EmptyState>
+        )}
+      </div>
+    </>
+  );
+}

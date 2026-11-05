@@ -8,12 +8,12 @@ This project addresses physical waiting at schools, clinics, barangay offices, g
 
 ## Features
 
-- Customer registration, login, protected routes, and role-aware navigation
+- Customer, Registrar, Finance, legacy staff, and administrator login with role-aware navigation
 - Customer service browsing, queue joining, live queue tracking, cancellation, history, and notifications
 - Staff dashboard with daily totals and average time calculations
 - Queue actions: call, start, complete, and skip/no-show
 - Service CRUD and deactivation
-- Supabase PostgreSQL schema, foreign keys, trigger-based user profiles, and RLS policies
+- Supabase PostgreSQL schema, department-scoped services and staff, queue status history, activity logs, foreign keys, trigger-based user profiles, and RLS policies
 - Responsive mobile customer UI and desktop-friendly staff tables
 - REST API with validation, authentication, role authorization, CORS, Helmet, and clear errors
 
@@ -44,7 +44,7 @@ The React client calls the Express API with a Supabase access token. Express ver
 
 ## Database design
 
-The schema in [`supabase/schema.sql`](./supabase/schema.sql) creates `users`, `services`, `queues`, `counters`, `notifications`, and `queue_history`. It includes foreign keys, active-queue uniqueness per customer, daily queue-number uniqueness, profile creation from Auth, and RLS policies. The `join_queue` RPC safely allocates daily queue numbers, and a unique history index prevents duplicate terminal records. Run the schema in the Supabase SQL Editor before starting the app.
+The schema in [`supabase/schema.sql`](./supabase/schema.sql) creates `users`, `services`, `queues`, `counters`, `notifications`, and `queue_history`. It includes foreign keys, active-queue uniqueness per customer, daily queue-number uniqueness, profile creation from Auth, and RLS policies. The `join_queue` RPC safely allocates daily queue numbers. Existing installations should run the migrations in filename order; the additive migrations introduce Registrar/Finance roles, service departments, queue status history, activity logs, and an atomic call-next RPC without dropping data.
 
 ## API documentation
 
@@ -54,7 +54,8 @@ The schema in [`supabase/schema.sql`](./supabase/schema.sql) creates `users`, `s
 | POST | `/api/auth/login` | Public | Sign in |
 | GET | `/api/auth/me` | Authenticated | Load current profile |
 | GET | `/api/services` | Public | List services with live waiting counts |
-| POST/PUT/DELETE | `/api/services/:id` | Staff | Manage services/deactivate |
+| POST | `/api/services` | Admin | Create a service and assign its department |
+| PUT/DELETE | `/api/services/:id` | Admin / matching department staff | Edit service or change own department availability |
 | GET | `/api/queues` | Authenticated | Own queues or all queues for staff |
 | POST | `/api/queues` | Customer | Join an open service |
 | PATCH | `/api/queues/:id/cancel` | Owner | Cancel own active queue |
@@ -62,14 +63,19 @@ The schema in [`supabase/schema.sql`](./supabase/schema.sql) creates `users`, `s
 | POST | `/api/queues/:id/start` | Staff | Mark `SERVING` |
 | POST | `/api/queues/:id/complete` | Staff | Mark `COMPLETED` and archive |
 | POST | `/api/queues/:id/skip` | Staff | Mark `NO-SHOW` and archive |
-| GET | `/api/notifications` | Customer | List own notifications |
-| PUT | `/api/notifications/:id/read` | Customer | Mark notification read |
+| POST | `/api/queues/:id/recall` | Staff | Notify a customer whose queue is already `CALLED` |
+| GET | `/api/notifications` | Authenticated | List own notifications |
+| PUT | `/api/notifications/:id/read` | Owner | Mark notification read |
 | GET | `/api/history` | Authenticated | Filter own/all queue history |
 | GET/POST | `/api/counters` | Staff | View/create counters |
 | PUT/DELETE | `/api/counters/:id` | Staff | Update/deactivate counter |
 | GET/POST | `/api/staff` | Admin | View/create staff accounts |
 | PUT | `/api/staff/:id` | Admin | Change staff role/active status |
-| GET | `/api/dashboard` | Staff | Daily statistics |
+| GET/PUT | `/api/users` and `/api/users/:id` | Admin | Search users and activate/deactivate accounts |
+| POST | `/api/queues/next` | Staff | Atomically call the oldest eligible customer in the staff member’s department |
+| GET | `/api/dashboard` | Staff | Department-scoped daily statistics |
+| GET | `/api/reports` | Admin | Date-filtered operational and staff metrics; `format=csv` exports queue records |
+| GET | `/api/activity` | Admin | Recent activity log |
 
 ## Environment variables
 
@@ -93,7 +99,7 @@ Never commit `.env` or expose `SUPABASE_SERVICE_ROLE_KEY` to the client.
 
 ## Installation and local development
 
-1. Create a Supabase project and run [`schema.sql`](./supabase/schema.sql). For an existing ONEQUEUE database, also run [`20261017_completion.sql`](./supabase/migrations/20261017_completion.sql).
+1. Create a Supabase project and run [`schema.sql`](./supabase/schema.sql), then run each SQL file in `supabase/migrations` in filename order. The migrations are additive and preserve existing records.
 2. Copy the environment examples and fill in credentials.
 3. Install dependencies from the root: `npm install`.
 4. Run both applications: `npm.cmd run dev` in Windows PowerShell (`npm run dev` in other shells).
@@ -102,16 +108,16 @@ Never commit `.env` or expose `SUPABASE_SERVICE_ROLE_KEY` to the client.
 To promote a user to staff for a demonstration, update the profile in Supabase SQL Editor:
 
 ```sql
-update public.users set role = 'admin' where email = 'your-email@example.com';
+update public.users set role = 'admin', department = null where email = 'your-email@example.com';
 ```
 
 ## Testing and deployment
 
-The API exposes `GET /api/health` for a basic deployment check. Run the server unit checks with `npm test --workspace server`. Build the client with `npm run build`. Deploy the client to Vercel with `VITE_API_URL` set to the deployed API URL; deploy the Express server to a Node-compatible host with its server environment variables.
+The API exposes `GET /api/health` for a basic deployment check. Run the server unit checks with `npm test --workspace server` and build the client with `npm run build`. Build the root [`Dockerfile`](./Dockerfile) and deploy the image to Amazon ECS Express Mode; follow [`AWS_DEPLOYMENT.md`](./AWS_DEPLOYMENT.md). Express serves the built React app and API under one HTTPS service URL. Set runtime secrets `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`; add `RESEND_API_KEY` and `NOTIFICATION_FROM` to enable email. Set `CLIENT_ORIGIN` and configure Supabase Auth redirect URLs with the ECS service URL, apply the database migrations, then verify `/api/health`, registration/login, and queue flow.
 
 ## Security notes
 
-The server verifies Supabase access tokens, separates customer/staff access, scopes customer queue reads to the authenticated user, validates required registration fields, and uses database RLS. For production, add rate limiting, stronger request schemas for every mutation, email confirmation policy, audit logging, and a transaction/RPC for high-concurrency queue-number generation.
+The server verifies Supabase access tokens, validates inputs, uses role/department checks, and relies on database RLS and transactional RPCs for queue operations. Keep service-role credentials server-side and configure Supabase Auth redirect/email-confirmation policies for the production domain.
 
 ## External notification integration
 
@@ -123,7 +129,22 @@ Customers can update their display name from the Profile page and request a Supa
 
 ## Future improvements
 
-The current release includes counter and staff administration APIs/UI, customer dashboard and service browsing, live queue tracking, notifications, queue history filtering, and a concurrency-safe `join_queue` PostgreSQL RPC. Future improvements include richer date-range reports, counter-to-active-queue assignment, SMS/email notifications, and automated end-to-end browser tests.
+The current release includes customer queueing, Registrar/Finance staff workflows, administrator account/service management, date-filtered reports, activity logs, realtime queue/notification feeds, optional Resend email, and concurrency-safe queue allocation/call-next RPCs.
+
+## Verified implementation checklist (2026-11-04)
+
+- [x] React/Vite client, Express API, and Supabase Auth/Postgres identified; root deployment combines frontend and API in one ECS Express Mode container.
+- [x] Roles include customer, Registrar, Finance, legacy staff, and admin; department queue/service access is scoped in API and RLS migration.
+- [x] Existing API and UI cover registration/login/recovery, profile, customer queues, queue status, history, in-app notifications, service/counter management, basic staff administration, and daily dashboard metrics.
+- [x] Queue numbers are allocated by the `join_queue` database RPC, with uniqueness and one-active-queue constraints.
+- [x] Customer/staff live queue and notification views use authenticated Supabase Realtime with polling fallback.
+- [x] Staff can atomically call the oldest eligible customer and recall a called customer.
+- [x] Separate Registrar and Finance roles are introduced additively and enforced for queue, service, counter, history, and dashboard access.
+- [x] Admin report and CSV endpoints use queue records; department metrics, staff performance, activity logs, and status history are included.
+- [ ] Supabase connectivity, email delivery, migration execution, and hosted behavior remain unverified because the local Supabase values are placeholders and no AWS account session/CLI is available.
+- [x] ECS Express Mode container and step-by-step deployment instructions are included; the live AWS service still needs to be created in an AWS account.
+
+The root workspace is the package configured by the root `package.json`. `itp2` is tracked as a git submodule and contains separate, unintegrated code; it was inspected but not modified as part of this root workspace update.
 
 ## GitHub workflow and team contributions
 

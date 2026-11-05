@@ -1,5 +1,48 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import Toast from '../components/Toast';
-export default function ResetPassword(){const [password,setPassword]=useState('');const [confirm,setConfirm]=useState('');const [error,setError]=useState('');const [message,setMessage]=useState('');const [busy,setBusy]=useState(false);const nav=useNavigate();async function submit(e){e.preventDefault();if(password.length<6||password!==confirm){setError('Passwords must match and contain at least 6 characters.');return}setBusy(true);setError('');try{const {error: updateError}=await supabase.auth.updateUser({password});if(updateError)throw updateError;setMessage('Password updated. You can now sign in.');setTimeout(()=>nav('/login'),1200)}catch(e){setError(e.message)}finally{setBusy(false)}}return <div className="auth-page"><Link to="/" className="brand auth-brand"><span className="brand-mark">O</span> ONEQUEUE</Link><div className="auth-card"><div className="eyebrow">ACCOUNT RECOVERY</div><h1>Choose a new password</h1><p className="muted">Use at least six characters for your new password.</p>{error&&<Toast message={error}/>} {message&&<div className="success-alert">{message}</div>}<form onSubmit={submit}><label>New password<input required minLength="6" type="password" value={password} onChange={e=>setPassword(e.target.value)}/></label><label>Confirm password<input required minLength="6" type="password" value={confirm} onChange={e=>setConfirm(e.target.value)}/></label><button className="button full" disabled={busy}>{busy?'Updating…':'Update password'}</button></form></div></div>}
+import AuthShell from '../components/AuthShell';
+import { Alert, Spinner } from '../components/ui';
+
+export default function ResetPassword() {
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const navigate = useNavigate();
+
+  async function submit(e) {
+    e.preventDefault();
+    if (password.length < 6) return setError('Use at least 6 characters for your new password.');
+    if (password !== confirm) return setError('The two passwords don’t match.');
+    setBusy(true); setError('');
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+      if (updateError) throw updateError;
+      setMessage('Password updated. Redirecting you to sign in…');
+      setTimeout(() => navigate('/login'), 1500);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <AuthShell title="Choose a new password" description="Pick something at least 6 characters long that you haven’t used before.">
+      <Alert message={error} />
+      <Alert type="success" message={message} />
+      <form className="form-grid" onSubmit={submit}>
+        <label className="field">New password
+          <input required minLength="6" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </label>
+        <label className="field">Confirm new password
+          <input required minLength="6" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+        </label>
+        <button className="btn btn-lg btn-block" disabled={busy || Boolean(message)}>{busy ? <Spinner light /> : 'Update password'}</button>
+      </form>
+      <p className="auth-switch"><Link className="link" to="/login">Back to sign in</Link></p>
+    </AuthShell>
+  );
+}

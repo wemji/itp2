@@ -2,10 +2,15 @@
   "name": "onequeue-server",
   "version": "1.0.0",
   "type": "module",
-  "scripts": { "dev": "node --watch src/index.js", "start": "node src/index.js", "test": "node --test test/queueRules.test.js test/validation.test.js" },
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "node --test test/queueRules.test.js test/validation.test.js",
+    "sync:mysql": "node scripts/sync-to-mysql.js"
+  },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.1",
     "@supabase/realtime-js": "^2.117.3",
+    "@supabase/supabase-js": "^2.49.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -13,5 +18,8 @@
     "morgan": "^1.10.0",
     "object-inspect": "^1.13.4",
     "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "mysql2": "^3.11.5"
   }
 }

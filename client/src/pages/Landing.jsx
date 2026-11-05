@@ -1,2 +1,131 @@
-import { Link } from 'react-router-dom'; import { ArrowRight, Clock3, Hash, MonitorSmartphone, ShieldCheck } from 'lucide-react';
-export default function Landing() { return <div className="landing"><nav className="landing-nav"><Link to="/" className="brand"><span className="brand-mark">O</span> ONEQUEUE</Link><div><Link to="/login" className="text-link">Log in</Link><Link to="/register" className="button small">Get started <ArrowRight size={16}/></Link></div></nav><section className="hero"><div className="hero-copy"><div className="eyebrow">DIGITAL QUEUE MANAGEMENT</div><h1>Skip the waiting.<br/><em>Know your turn.</em></h1><p>Join service queues remotely, monitor your position, and arrive when your turn is near.</p><div className="hero-actions"><Link to="/register" className="button">Join a queue <ArrowRight size={18}/></Link><Link to="/login" className="button secondary">I already have an account</Link></div></div><div className="hero-card"><div className="card-label">LIVE QUEUE STATUS</div><div className="hero-number">A-057</div><div className="hero-service">Registrar's Office</div><div className="hero-stats"><span><strong>A-042</strong><small>Now serving</small></span><span><strong>15</strong><small>People ahead</small></span><span><strong>30 min</strong><small>Estimated wait</small></span></div><div className="progress"><span style={{width:'72%'}}/></div><div className="status-pill">● WAITING</div></div></section><section className="how"><div className="section-heading"><div className="eyebrow">SIMPLE BY DESIGN</div><h2>How ONEQUEUE works</h2></div><div className="steps">{[[Hash,'01','Select a service','Choose the office or service you need.'],[Clock3,'02','Get your number','Receive a unique digital queue number.'],[MonitorSmartphone,'03','Monitor your position','See the live queue and estimated wait.'],[ShieldCheck,'04','Come when ready','Arrive when your turn is approaching.']].map(([Icon,n,title,text]) => <div className="step" key={n}><Icon/><span>{n}</span><h3>{title}</h3><p>{text}</p></div>)}</div></section></div> }
+import { Link } from 'react-router-dom';
+import {
+  ArrowRight, BarChart3, BellRing, Building2, Check, Clock3, MonitorSmartphone, Radio, Search, ShieldCheck, Ticket, Wallet,
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { homeFor } from '../lib/roles';
+
+const STEPS = [
+  [Search, 'Choose a service', 'Browse Registrar and Finance services with live wait estimates.'],
+  [Ticket, 'Get your number', 'Receive a digital queue number instantly — no paper slips.'],
+  [MonitorSmartphone, 'Track from anywhere', 'Watch your position update in real time on any device.'],
+  [BellRing, 'Arrive on time', 'Get notified when you’re next, then head to the counter.'],
+];
+
+const ROLES = [
+  [Ticket, 'customer', 'Customers', ['Join queues remotely', 'Live position & wait time', 'Visit history and alerts']],
+  [Building2, 'registrar', 'Registrar desk', ['Call, serve and complete', 'Department-only queues', 'Counter availability']],
+  [Wallet, 'finance', 'Finance desk', ['Dedicated finance queue', 'Recall and skip no-shows', 'Daily desk overview']],
+  [ShieldCheck, 'admin', 'Administrators', ['Manage staff and services', 'Reports with CSV export', 'Full activity audit log']],
+];
+
+export default function Landing() {
+  const { profile } = useAuth();
+  return (
+    <div className="landing">
+      <nav className="landing-nav">
+        <div className="landing-nav-inner">
+          <Link to="/" className="brand"><span className="brand-mark">O</span>ONEQUEUE</Link>
+          <div className="landing-nav-links">
+            {profile ? (
+              <Link to={homeFor(profile.role)} className="btn">Open dashboard <ArrowRight size={16} /></Link>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-ghost">Sign in</Link>
+                <Link to="/register" className="btn">Get started <ArrowRight size={16} /></Link>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      <header className="hero">
+        <div className="landing-section hero-grid">
+          <div className="hero-copy">
+            <span className="hero-pill"><Radio size={14} /> Digital queue management</span>
+            <h1>Skip the line.<br /><em>Keep your place.</em></h1>
+            <p>Join Registrar and Finance queues from your phone, follow your place live, and arrive just as you’re called.</p>
+            <div className="hero-actions">
+              <Link to="/register" className="btn btn-lg">Join a queue <ArrowRight size={18} /></Link>
+              <Link to="/login" className="btn btn-lg btn-secondary">I have an account</Link>
+            </div>
+            <div className="hero-proof">
+              <div><strong>Real-time</strong><span>position updates</span></div>
+              <div><strong>2 desks</strong><span>Registrar &amp; Finance</span></div>
+              <div><strong>0 paper</strong><span>tickets to lose</span></div>
+            </div>
+          </div>
+          <div className="hero-visual" aria-hidden="true">
+            <div className="ticket">
+              <div className="ticket-label"><Radio size={13} /> Your queue · Registrar’s Office</div>
+              <div className="ticket-number">R-057</div>
+              <div className="ticket-service">Transcript request</div>
+              <div className="ticket-stats">
+                <div><span>Now serving</span><strong className="mono">R-052</strong></div>
+                <div><span>Ahead of you</span><strong>4</strong></div>
+                <div><span>Est. wait</span><strong>12 min</strong></div>
+              </div>
+              <div className="progress"><span style={{ width: '72%' }} /></div>
+            </div>
+            <div className="card hero-board">
+              <div className="hero-board-row"><span className="muted"><Clock3 size={14} style={{ verticalAlign: '-2px' }} /> Finance · Payments</span><span className="badge badge-open">~8 min</span></div>
+              <div className="hero-board-row"><span className="muted"><Clock3 size={14} style={{ verticalAlign: '-2px' }} /> Registrar · Enrollment</span><span className="badge badge-waiting">~15 min</span></div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section className="features">
+        <div className="landing-section">
+          <div className="section-title">
+            <div className="eyebrow" style={{ justifyContent: 'center' }}>How it works</div>
+            <h2>Four steps from line to counter</h2>
+            <p>No more standing around. ONEQUEUE keeps you informed from the moment you join.</p>
+          </div>
+          <div className="grid grid-4">
+            {STEPS.map(([Icon, title, text], i) => (
+              <div className="card feature" key={title}>
+                <span className="num">0{i + 1}</span>
+                <div className="tile"><Icon size={19} /></div>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="roles-band">
+        <div className="landing-section">
+          <div className="section-title">
+            <div className="eyebrow" style={{ justifyContent: 'center' }}>Built for every role</div>
+            <h2>A dedicated workspace for each team</h2>
+            <p>Every desk sees exactly what it needs — and nothing it shouldn’t.</p>
+          </div>
+          <div className="grid grid-4">
+            {ROLES.map(([Icon, key, title, points]) => (
+              <div className="card role-card" key={key} data-role={key}>
+                <div className="tile" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}><Icon size={19} /></div>
+                <h3>{title}</h3>
+                <ul>{points.map((p) => <li key={p}><Check size={14} />{p}</li>)}</ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="cta">
+        <div className="landing-section">
+          <BarChart3 size={28} color="var(--brand)" />
+          <h2>Ready to stop waiting in line?</h2>
+          <p>Create a free account and join your first queue in under a minute.</p>
+          <Link to="/register" className="btn btn-lg">Create your account <ArrowRight size={18} /></Link>
+        </div>
+      </section>
+
+      <footer className="landing-footer">
+        <div className="landing-section"><span>© {new Date().getFullYear()} ONEQUEUE</span><span>Digital queue management for Registrar &amp; Finance services</span></div>
+      </footer>
+    </div>
+  );
+}

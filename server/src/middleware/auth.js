@@ -10,8 +10,12 @@ export async function requireAuth(req, res, next) {
   req.user = { ...user, profile };
   next();
 }
+export function optionalAuth(req, res, next) {
+  if (!req.headers.authorization) return next();
+  return requireAuth(req, res, next);
+}
 export function requireStaff(req, res, next) {
-  if (!['admin', 'staff'].includes(req.user?.profile?.role)) return res.status(403).json({ error: 'Staff access required.' });
+  if (!['admin', 'staff', 'registrar', 'finance'].includes(req.user?.profile?.role)) return res.status(403).json({ error: 'Staff access required.' });
   next();
 }
 export function requireAdmin(req, res, next) {

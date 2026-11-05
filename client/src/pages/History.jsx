@@ -1,15 +1,101 @@
-﻿import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Bell, CheckCircle2, Clock3, Radio, XCircle } from 'lucide-react';
-import { api } from '../lib/api';
-import { supabase } from '../lib/supabase';
-import Toast from '../components/Toast';
-export default function LiveQueue() {
-  const { id } = useParams(); const [queue, setQueue] = useState(null); const [error, setError] = useState('');
-  useEffect(() => { let mounted = true; const load = () => api(`/queues/${id}`).then(data => mounted && (setQueue(data), setError(''))).catch(e => mounted && setError(e.message)); load(); const timer = setInterval(load, 15000); const channel = supabase.channel(`live-queue-${id}`).on('postgres_changes', { event: '*', schema: 'public', table: 'queues', filter: `id=eq.${id}` }, load).subscribe(); return () => { mounted = false; clearInterval(timer); supabase.removeChannel(channel); }; }, [id]);
-  if (error && !queue) return <><Link to="/dashboard" className="back-link">← Back to dashboard</Link><Toast message={error} /></>;
-  if (!queue) return <div className="center-screen"><span className="spinner" /></div>;
-  const serviceTime = queue.services?.average_service_time || 5; const ahead = Math.max(0, Math.ceil(queue.estimated_wait_time / serviceTime)); const terminal = ['COMPLETED', 'CANCELLED', 'NO-SHOW'].includes(queue.status);
-  const steps = [['Joined queue', true], ['Your turn', ['CALLED', 'SERVING', 'COMPLETED'].includes(queue.status)], ['Being served', ['SERVING', 'COMPLETED'].includes(queue.status)], ['Complete', queue.status === 'COMPLETED']];
-  return <><Link to="/dashboard" className="back-link">← Back to dashboard</Link><div className="live-head"><div><div className="eyebrow"><Radio size={13} /> LIVE QUEUE · {queue.services?.name}</div><h1>Track your place</h1><p className="muted">This page updates automatically while you wait.</p></div><span className={`status ${queue.status.toLowerCase()}`}>{queue.status}</span></div><Toast message={error} /><div className="live-card"><div className="live-number-label">YOUR QUEUE NUMBER</div><div className="live-number">{queue.queue_number}</div><div className="live-stats"><div><span>NOW SERVING</span><strong>{queue.now_serving || '—'}</strong></div><div><span>PEOPLE AHEAD</span><strong>{ahead}</strong></div><div><span>ESTIMATED WAIT</span><strong>{terminal ? '—' : `${queue.estimated_wait_time} min`}</strong></div></div><div className="timeline timeline-four"><div className="timeline-line" />{steps.map(([label, done]) => <div className={`timeline-step ${done ? 'done' : ''}`} key={label}><CheckCircle2 /><span>{label}</span></div>)}</div>{queue.status === 'CALLED' && <div className="notice"><Bell /><div><strong>Your turn is coming up</strong><p>Please proceed to {queue.counters?.counter_name || queue.services?.name} now.</p></div></div>}{queue.status === 'SERVING' && <div className="notice"><CheckCircle2 /><div><strong>You’re being served</strong><p>Please proceed to {queue.counters?.counter_name || 'the service counter'}.</p></div></div>}{terminal && <div className={`notice ${queue.status === 'COMPLETED' ? '' : 'notice-ended'}`}>{queue.status === 'COMPLETED' ? <CheckCircle2 /> : <XCircle />}<div><strong>{queue.status === 'COMPLETED' ? 'Visit complete' : `Queue ${queue.status.toLowerCase()}`}</strong><p>{queue.status === 'COMPLETED' ? 'Thank you. Your visit is complete.' : 'This queue is no longer active. You can join another service from the dashboard.'}</p></div></div>}</div></>;
+﻿import { useMemo, useState } from 'react';
+import { CheckCircle2, Clock3, History as HistoryIcon, Search, Ticket, XCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { departmentLabel, isStaff, roleInfo } from '../lib/roles';
+import { formatDate, formatTime, minutes } from '../lib/format';
+import { Alert, Avatar, EmptyState, PageHeader, StatCard, StatusBadge, TableLoading, useApi } from '../components/ui';
+
+const STATUSES = [['', 'All'], ['COMPLETED', 'Completed'], ['CANCELLED', 'Cancelled'], ['NO-SHOW', 'No-show']];
+
+export default function History() {
+  const { profile } = useAuth();
+  const staff = isStaff(profile?.role);
+  const [status, setStatus] = useState('');
+  const [search, setSearch] = useState('');
+  const [range, setRange] = useState({ from: '', to: '' });
+
+  const path = useMemo(() => {
+    const params = new URLSearchParams();
+    if (status) params.set('status', status);
+    if (range.from) params.set('from', new Date(`${range.from}T00:00:00`).toISOString());
+    if (range.to) params.set('to', new Date(`${range.to}T23:59:59`).toISOString());
+    const qs = params.toString();
+    return `/history${qs ? `?${qs}` : ''}`;
+  }, [status, range]);
+  const { data, error, loading } = useApi(path, { initial: [] });
+
+  const rows = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return (data || []).filter((r) => !term || [r.queue_number, r.users?.name, r.users?.email, r.services?.name].some((v) => v?.toLowerCase().includes(term)));
+  }, [data, search]);
+
+  const completed = rows.filter((r) => r.status === 'COMPLETED');
+  const avg = (key) => (completed.length ? Math.round(completed.reduce((sum, r) => sum + (r[key] || 0), 0) / completed.length) : 0);
+  const cols = staff ? 7 : 6;
+
+  return (
+    <>
+      <PageHeader
+        eyebrow={staff ? roleInfo(profile.role).workspace : 'Your account'}
+        title={staff ? 'Queue history' : 'Visit history'}
+        description={staff ? 'Every closed ticket for your desk, with wait and service times.' : 'A record of your past queues and how long each one took.'}
+      />
+      <Alert message={error} />
+
+      <div className="grid grid-4" style={{ marginBottom: 20 }}>
+        <StatCard label="Records" value={rows.length} icon={Ticket} />
+        <StatCard label="Completed" value={completed.length} icon={CheckCircle2} tone="success" />
+        <StatCard label="Avg. wait" value={minutes(avg('waiting_time'))} icon={Clock3} tone="warning" />
+        <StatCard label="Cancelled / no-show" value={rows.length - completed.length} icon={XCircle} tone="danger" />
+      </div>
+
+      <div className="card">
+        <div className="toolbar">
+          <div className="search-input grow">
+            <Search size={16} />
+            <input className="input" type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={staff ? 'Search ticket, customer or service' : 'Search ticket or service'} aria-label="Search history" />
+          </div>
+          <label className="field">From<input type="date" value={range.from} max={range.to || undefined} onChange={(e) => setRange({ ...range, from: e.target.value })} /></label>
+          <label className="field">To<input type="date" value={range.to} min={range.from || undefined} onChange={(e) => setRange({ ...range, to: e.target.value })} /></label>
+          <div className="tabs" role="tablist" aria-label="Status">
+            {STATUSES.map(([value, label]) => (
+              <button key={label} role="tab" aria-selected={status === value} className={status === value ? 'tab active' : 'tab'} onClick={() => setStatus(value)}>{label}</button>
+            ))}
+          </div>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket</th>
+                {staff && <th>Customer</th>}
+                <th>Service</th>
+                <th>Date</th>
+                <th className="num">Wait</th>
+                <th className="num">Service time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? <TableLoading colSpan={cols} /> : rows.length ? rows.map((r) => (
+                <tr key={r.id}>
+                  <td><span className="ticket-code">{r.queue_number}</span></td>
+                  {staff && (
+                    <td><div className="cell-user"><Avatar name={r.users?.name} soft /><div>{r.users?.name || '—'}<span className="sub">{r.users?.email}</span></div></div></td>
+                  )}
+                  <td>{r.services?.name || '—'}<span className="sub">{departmentLabel(r.services?.department)}</span></td>
+                  <td>{formatDate(r.created_at)}<span className="sub">{formatTime(r.created_at)}</span></td>
+                  <td className="num">{minutes(r.waiting_time)}</td>
+                  <td className="num">{r.status === 'COMPLETED' ? minutes(r.service_time) : '—'}</td>
+                  <td><StatusBadge status={r.status} /></td>
+                </tr>
+              )) : (
+                <tr><td colSpan={cols}><EmptyState icon={HistoryIcon} title="No history found">{search || status || range.from || range.to ? 'Try clearing your filters.' : 'Closed tickets will appear here.'}</EmptyState></td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
 }

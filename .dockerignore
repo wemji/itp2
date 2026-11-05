@@ -1,0 +1,12 @@
+.git
+.vscode
+itp2
+node_modules
+client/node_modules
+server/node_modules
+client/dist
+**/.env
+**/.env.*
+!.env.example
+*.log
+xampp
