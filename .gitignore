@@ -4,3 +4,6 @@ dist
 .env.*
 !.env.example
 *.log
+
+# Local clone of main branch, not part of this project
+itp2/
