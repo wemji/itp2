@@ -8,7 +8,7 @@ This project addresses physical waiting at schools, clinics, barangay offices, g
 
 ## Features
 
-- Customer, Registrar, Finance, legacy staff, and administrator login with role-aware navigation
+- Customer, Registrar, Finance, SAO (Student Affairs Office), legacy staff, and administrator login with role-aware navigation
 - Customer service browsing, queue joining, live queue tracking, cancellation, history, and notifications
 - Staff dashboard with daily totals and average time calculations
 - Queue actions: call, start, complete, and skip/no-show
@@ -44,7 +44,7 @@ The React client calls the Express API with a Supabase access token. Express ver
 
 ## Database design
 
-The schema in [`supabase/schema.sql`](./supabase/schema.sql) creates `users`, `services`, `queues`, `counters`, `notifications`, and `queue_history`. It includes foreign keys, active-queue uniqueness per customer, daily queue-number uniqueness, profile creation from Auth, and RLS policies. The `join_queue` RPC safely allocates daily queue numbers. Existing installations should run the migrations in filename order; the additive migrations introduce Registrar/Finance roles, service departments, queue status history, activity logs, and an atomic call-next RPC without dropping data.
+The schema in [`supabase/schema.sql`](./supabase/schema.sql) creates `users`, `services`, `queues`, `counters`, `notifications`, and `queue_history`. It includes foreign keys, active-queue uniqueness per customer, daily queue-number uniqueness, profile creation from Auth, and RLS policies. The `join_queue` RPC safely allocates daily queue numbers. Existing installations should run the migrations in filename order; the additive migrations introduce Registrar/Finance/SAO roles (run `20261107_1_sao_role.sql` on its own before `20261107_2_sao_department.sql`), service departments, queue status history, activity logs, and an atomic call-next RPC without dropping data.
 
 ## API documentation
 
@@ -129,17 +129,17 @@ Customers can update their display name from the Profile page and request a Supa
 
 ## Future improvements
 
-The current release includes customer queueing, Registrar/Finance staff workflows, administrator account/service management, date-filtered reports, activity logs, realtime queue/notification feeds, optional Resend email, and concurrency-safe queue allocation/call-next RPCs.
+The current release includes customer queueing, Registrar/Finance/SAO staff workflows, administrator account/service management, date-filtered reports, activity logs, realtime queue/notification feeds, optional Resend email, and concurrency-safe queue allocation/call-next RPCs.
 
 ## Verified implementation checklist (2026-11-04)
 
 - [x] React/Vite client, Express API, and Supabase Auth/Postgres identified; root deployment combines frontend and API in one ECS Express Mode container.
-- [x] Roles include customer, Registrar, Finance, legacy staff, and admin; department queue/service access is scoped in API and RLS migration.
+- [x] Roles include customer, Registrar, Finance, SAO, legacy staff, and admin; department queue/service access is scoped in API and RLS migration.
 - [x] Existing API and UI cover registration/login/recovery, profile, customer queues, queue status, history, in-app notifications, service/counter management, basic staff administration, and daily dashboard metrics.
 - [x] Queue numbers are allocated by the `join_queue` database RPC, with uniqueness and one-active-queue constraints.
 - [x] Customer/staff live queue and notification views use authenticated Supabase Realtime with polling fallback.
 - [x] Staff can atomically call the oldest eligible customer and recall a called customer.
-- [x] Separate Registrar and Finance roles are introduced additively and enforced for queue, service, counter, history, and dashboard access.
+- [x] Separate Registrar, Finance and SAO roles are introduced additively and enforced for queue, service, counter, history, and dashboard access.
 - [x] Admin report and CSV endpoints use queue records; department metrics, staff performance, activity logs, and status history are included.
 - [ ] Supabase connectivity, email delivery, migration execution, and hosted behavior remain unverified because the local Supabase values are placeholders and no AWS account session/CLI is available.
 - [x] ECS Express Mode container and step-by-step deployment instructions are included; the live AWS service still needs to be created in an AWS account.

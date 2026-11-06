@@ -106,7 +106,7 @@ export function AdminReports() {
           </div>
 
           <section className="card section">
-            <div className="card-header"><div><h2>Department performance</h2><p>Registrar vs. Finance</p></div></div>
+            <div className="card-header"><div><h2>Department performance</h2><p>Registrar, Finance and SAO</p></div></div>
             <div className="table-wrap">
               <table>
                 <thead><tr><th>Department</th><th className="num">Tickets</th><th className="num">Completed</th><th className="num">Cancelled</th><th className="num">No-show</th><th className="num">Waiting</th><th className="num">Avg. wait</th><th className="num">Avg. processing</th></tr></thead>

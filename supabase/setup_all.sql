@@ -6,7 +6,7 @@
 -- Run in Supabase SQL Editor. Auth users are mirrored into public.users by the trigger.
 create extension if not exists pgcrypto;
 
-do $$ begin create type public.user_role as enum ('admin', 'staff', 'customer', 'registrar', 'finance'); exception when duplicate_object then null; end $$;
+do $$ begin create type public.user_role as enum ('admin', 'staff', 'customer', 'registrar', 'finance', 'sao'); exception when duplicate_object then null; end $$;
 do $$ begin create type public.service_status as enum ('OPEN', 'CLOSED'); exception when duplicate_object then null; end $$;
 do $$ begin create type public.queue_status as enum ('WAITING', 'CALLED', 'SERVING', 'COMPLETED', 'CANCELLED', 'NO-SHOW'); exception when duplicate_object then null; end $$;
 do $$ begin create type public.counter_status as enum ('ACTIVE', 'OFFLINE'); exception when duplicate_object then null; end $$;
@@ -112,6 +112,7 @@ $$;
 -- Add department-scoped staff roles; apply this migration before the department schema migration.
 alter type public.user_role add value if not exists 'registrar';
 alter type public.user_role add value if not exists 'finance';
+alter type public.user_role add value if not exists 'sao';
 
 
 -- ===== migrations/20261104_2_departments_and_reporting.sql =====
@@ -126,9 +127,9 @@ update public.services set department = case
   else 'registrar' end;
 
 alter table public.users drop constraint if exists users_department_check;
-alter table public.users add constraint users_department_check check (department is null or department in ('registrar','finance'));
+alter table public.users add constraint users_department_check check (department is null or department in ('registrar','finance','sao'));
 alter table public.services drop constraint if exists services_department_check;
-alter table public.services add constraint services_department_check check (department in ('registrar','finance'));
+alter table public.services add constraint services_department_check check (department in ('registrar','finance','sao'));
 
 create table if not exists public.queue_status_history (
   id uuid primary key default gen_random_uuid(),
@@ -202,7 +203,7 @@ create policy "activity logs admin read" on public.activity_logs for select
 using (exists (select 1 from public.users u where u.id = auth.uid() and u.role = 'admin' and u.is_active));
 
 create or replace function public.is_staff() returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.users where id = auth.uid() and is_active and role in ('admin','staff','registrar','finance'));
+  select exists (select 1 from public.users where id = auth.uid() and is_active and role in ('admin','staff','registrar','finance','sao'));
 $$;
 create or replace function public.can_access_department(p_department text) returns boolean
 language sql stable security definer set search_path = public as $$
@@ -273,7 +274,7 @@ begin
     raise exception 'You already have an active queue.' using errcode = '23505';
   end if;
   select count(*) into v_count from public.queues where service_id = p_service_id and joined_at >= date_trunc('day', now()) and status in ('WAITING','CALLED','SERVING');
-  v_prefix := case v_service.department when 'finance' then 'F' else 'R' end;
+  v_prefix := case v_service.department when 'finance' then 'F' when 'sao' then 'S' else 'R' end;
   insert into public.queues (queue_number, user_id, service_id, estimated_wait_time)
   values (v_prefix || '-' || lpad((coalesce((select max(substring(queue_number from '[0-9]+$')::integer) from public.queues where service_id = p_service_id and joined_at >= date_trunc('day', now())), 0) + 1)::text, 3, '0'), p_user_id, p_service_id, v_count * v_service.average_service_time)
   returning * into v_queue;
@@ -289,7 +290,7 @@ returns public.queues language plpgsql security definer set search_path = public
 declare v_staff public.users; v_queue public.queues;
 begin
   if auth.role() <> 'service_role' and p_staff_id <> auth.uid() then raise exception 'You may only call a queue for yourself.' using errcode = '42501'; end if;
-  select * into v_staff from public.users where id = p_staff_id and is_active and role in ('admin','staff','registrar','finance');
+  select * into v_staff from public.users where id = p_staff_id and is_active and role in ('admin','staff','registrar','finance','sao');
   if not found then raise exception 'Active staff access required.' using errcode = '42501'; end if;
   select q.* into v_queue from public.queues q join public.services s on s.id = q.service_id
   where q.status = 'WAITING' and (v_staff.role in ('admin','staff') or s.department = v_staff.department)

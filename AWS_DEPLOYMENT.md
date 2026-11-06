@@ -12,6 +12,8 @@ sh deploy/aws-ec2/deploy.sh
 
 The script builds the client, uploads the app and the Supabase keys from `server/.env` (saved on the server as `/opt/onequeue/.env.production`, readable only by root and the app), and restarts the service. It uses `~/Downloads/onequeue.pem`. SSH (port 22) is open only from the IP address `119.94.196.196`. If your home IP changes, add the new one to security group `launch-wizard-7`.
 
+**Automatic updates (on):** the server checks GitHub `main` every minute. When there is a new commit, it installs, runs the server tests, builds, restarts the app, and rolls back if `/api/health` fails. So a `git push` to `main` is live in about 1–3 minutes, and teammates only need to refresh the page. It never runs database migrations: run new `supabase/migrations` files in Supabase *before* pushing code that needs them. One-time setup (already done): `sh deploy/aws-ec2/enable-auto-update.sh`. Watch it: `ssh -i ~/Downloads/onequeue.pem ubuntu@32.200.156.245 "sudo journalctl -u onequeue-autoupdate -n 50"`. If a commit fails, the old version stays live; push a fix to try again.
+
 **Logs:** `ssh -i ~/Downloads/onequeue.pem ubuntu@32.200.156.245 "sudo journalctl -u onequeue -n 100"`
 
 **After the first deploy with real keys:** in Supabase, go to **Authentication → URL Configuration**. Set **Site URL** to `https://32-200-156-245.sslip.io`, and add `https://32-200-156-245.sslip.io/reset-password` to **Redirect URLs**.
@@ -57,7 +59,7 @@ The Docker build uses the root npm workspaces and packages the built client with
 3. Add runtime secrets `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` from AWS Secrets Manager. Give the task execution role permission to read only those secrets.
 4. Add `RESEND_API_KEY` and `NOTIFICATION_FROM` if email should be sent. The server always accepts requests from its own URL, so `CLIENT_ORIGIN` is only needed if a client on a *different* domain (for example a custom frontend domain) calls the API.
 5. Create the service and wait for it to become active. ECS provides an HTTPS application URL. Add that URL and `/reset-password` to Supabase Auth’s redirect allow list.
-6. Verify `/api/health`, register/log in, create a customer queue, check Registrar/Finance separation, call/start/complete a queue, and verify realtime notifications and report screens.
+6. Verify `/api/health`, register/log in, create a customer queue, check Registrar/Finance/SAO separation, call/start/complete a queue, and verify realtime notifications and report screens.
 
 Keep ECS tasks on a network path that can reach the public Supabase and Resend APIs. Express Mode’s default deployment creates the necessary load balancer and networking; if you customize the VPC/subnets, ensure outbound internet access is available to the tasks.
 

@@ -1,7 +1,7 @@
 -- Run in Supabase SQL Editor. Auth users are mirrored into public.users by the trigger.
 create extension if not exists pgcrypto;
 
-do $$ begin create type public.user_role as enum ('admin', 'staff', 'customer', 'registrar', 'finance'); exception when duplicate_object then null; end $$;
+do $$ begin create type public.user_role as enum ('admin', 'staff', 'customer', 'registrar', 'finance', 'sao'); exception when duplicate_object then null; end $$;
 do $$ begin create type public.service_status as enum ('OPEN', 'CLOSED'); exception when duplicate_object then null; end $$;
 do $$ begin create type public.queue_status as enum ('WAITING', 'CALLED', 'SERVING', 'COMPLETED', 'CANCELLED', 'NO-SHOW'); exception when duplicate_object then null; end $$;
 do $$ begin create type public.counter_status as enum ('ACTIVE', 'OFFLINE'); exception when duplicate_object then null; end $$;

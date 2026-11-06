@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Activity, BarChart3, Bell, Building2, ClipboardList, History, LayoutDashboard, LogOut, Menu,
+  Activity, BarChart3, Bell, Building2, GraduationCap, ClipboardList, History, LayoutDashboard, LogOut, Menu,
   MonitorPlay, ScrollText, Search, Settings2, ShieldCheck, Ticket, User, UserCog, Users, Wallet, X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +9,7 @@ import { supabase } from '../lib/supabase';
 import { isStaff, roleInfo } from '../lib/roles';
 import { useApi, Avatar } from './ui';
 
-const WORKSPACE_ICONS = { admin: ShieldCheck, registrar: Building2, finance: Wallet, staff: MonitorPlay, customer: Ticket };
+const WORKSPACE_ICONS = { admin: ShieldCheck, registrar: Building2, finance: Wallet, sao: GraduationCap, staff: MonitorPlay, customer: Ticket };
 
 function navFor(role) {
   if (role === 'admin') return [

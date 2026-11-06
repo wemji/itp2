@@ -180,7 +180,7 @@ export function Services() {
             <input className="input" type="search" placeholder="Search services, offices or locations" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search services" />
           </div>
           <div className="tabs" role="tablist" aria-label="Department">
-            {[['all', 'All'], ['registrar', 'Registrar'], ['finance', 'Finance']].map(([value, label]) => (
+            {[['all', 'All'], ['registrar', 'Registrar'], ['finance', 'Finance'], ['sao', 'SAO']].map(([value, label]) => (
               <button key={value} role="tab" aria-selected={department === value} className={department === value ? 'tab active' : 'tab'} onClick={() => setDepartment(value)}>{label}</button>
             ))}
           </div>

@@ -53,6 +53,7 @@
 [data-role='customer'] { --accent: #0f766e; --accent-soft: #e7f5f3; }
 [data-role='registrar'] { --accent: #1d4ed8; --accent-soft: #ebf1ff; }
 [data-role='finance'] { --accent: #b45309; --accent-soft: #fff4e0; }
+[data-role='sao'] { --accent: #be185d; --accent-soft: #fdf2f8; }
 [data-role='staff'] { --accent: #0f766e; --accent-soft: #e7f5f3; }
 [data-role='admin'] { --accent: #4f46e5; --accent-soft: #eef0ff; }
 
@@ -156,6 +157,7 @@ h3 { font-size: 15px; font-weight: 600; }
 .role-admin { background: #eef0ff; color: #4338ca; }
 .role-registrar { background: #ebf1ff; color: #1d4ed8; }
 .role-finance { background: #fff4e0; color: #b45309; }
+.role-sao { background: #fdf2f8; color: #be185d; }
 .role-staff, .role-customer { background: var(--brand-soft); color: var(--brand-ink); }
 
 /* ============ App shell ============ */
@@ -189,6 +191,7 @@ h3 { font-size: 15px; font-weight: 600; }
 .nav-link.active { background: rgba(255,255,255,.09); color: #fff; box-shadow: inset 3px 0 0 var(--accent-bright, #2dd4bf); }
 [data-role='registrar'] { --accent-bright: #60a5fa; }
 [data-role='finance'] { --accent-bright: #fbbf24; }
+[data-role='sao'] { --accent-bright: #f472b6; }
 [data-role='admin'] { --accent-bright: #a5b4fc; }
 .nav-count { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
 .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.07); display: grid; gap: 6px; }
@@ -241,6 +244,7 @@ h3 { font-size: 15px; font-weight: 600; }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .split { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
 .split-form { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 20px; align-items: start; }
 .sticky { position: sticky; top: 84px; }
@@ -254,6 +258,7 @@ h3 { font-size: 15px; font-weight: 600; }
 .stat-icon.violet { background: var(--violet-soft); color: var(--violet); }
 .stat-icon.success { background: var(--success-soft); color: var(--success); }
 .stat-icon.danger { background: var(--danger-soft); color: var(--danger); }
+.stat-icon.rose { background: #fdf2f8; color: #be185d; }
 .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .stat-hint { font-size: 12.5px; color: var(--text-3); }
 
@@ -299,6 +304,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .tile { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; flex: none; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
 .tile.registrar { background: #ebf1ff; color: #1d4ed8; }
 .tile.finance { background: #fff4e0; color: #b45309; }
+.tile.sao { background: #fdf2f8; color: #be185d; }
 
 /* ============ Queue / ticket components ============ */
 .ticket {
@@ -471,7 +477,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ============ Responsive ============ */
 @media (max-width: 1100px) {
-  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-4, .grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .split, .split-form, .console { grid-template-columns: minmax(0, 1fr); }
   .sticky { position: static; }
   .hero-grid { grid-template-columns: 1fr; gap: 44px; }
@@ -492,7 +498,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 }
 @media (max-width: 560px) {
   h1 { font-size: 22px; }
-  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .grid-4, .grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .stat { padding: 14px; }
   .stat-value { font-size: 22px; }
   .form-row { grid-template-columns: 1fr; }

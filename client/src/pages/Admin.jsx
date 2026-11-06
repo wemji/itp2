@@ -141,7 +141,7 @@ export function AdminDashboard() {
       {role === 'admin' && (
         <div className="grid grid-3 section">
           {[
-            ['/admin/staff', UserCog, 'Staff accounts', 'Add Registrar and Finance team members.'],
+            ['/admin/staff', UserCog, 'Staff accounts', 'Add Registrar, Finance and SAO team members.'],
             ['/admin/services', Settings2, 'Services', 'Configure services, hours and locations.'],
             ['/admin/reports', BarChart3, 'Reports', 'Analyze performance and export CSV.'],
           ].map(([to, Icon, title, text]) => (
@@ -373,7 +373,7 @@ export function ServiceManagement() {
             </div>
             <div className="card-body form-grid">
               <label className="field">Department
-                <select required value={form.department} onChange={set('department')}><option value="registrar">Registrar</option><option value="finance">Finance</option></select>
+                <select required value={form.department} onChange={set('department')}><option value="registrar">Registrar</option><option value="finance">Finance</option><option value="sao">SAO</option></select>
               </label>
               <label className="field">Service name<input required maxLength="100" value={form.name} onChange={set('name')} placeholder="e.g. Transcript request" /></label>
               <label className="field">Description<textarea rows="3" maxLength="500" value={form.description} onChange={set('description')} placeholder="What can customers get help with?" /></label>

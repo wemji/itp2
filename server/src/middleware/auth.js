@@ -1,4 +1,6 @@
 import { supabase, supabaseAuth } from '../supabase.js';
+export const DESK_ROLES = ['registrar', 'finance', 'sao'];
+export const STAFF_ROLES = ['admin', 'staff', ...DESK_ROLES];
 
 export async function requireAuth(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
@@ -15,7 +17,7 @@ export function optionalAuth(req, res, next) {
   return requireAuth(req, res, next);
 }
 export function requireStaff(req, res, next) {
-  if (!['admin', 'staff', 'registrar', 'finance'].includes(req.user?.profile?.role)) return res.status(403).json({ error: 'Staff access required.' });
+  if (!STAFF_ROLES.includes(req.user?.profile?.role)) return res.status(403).json({ error: 'Staff access required.' });
   next();
 }
 export function requireAdmin(req, res, next) {

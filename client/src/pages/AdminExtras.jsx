@@ -136,13 +136,14 @@ export function StaffManagement() {
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Staff accounts" description="Create accounts for Registrar and Finance teams, assign roles and control access." />
+      <PageHeader eyebrow="Administration" title="Staff accounts" description="Create accounts for Registrar, Finance and SAO teams, assign roles and control access." />
       <Alert message={error || loadError} />
       <Alert type="success" message={notice} />
-      <div className="grid grid-4" style={{ marginBottom: 20 }}>
+      <div className="grid grid-5" style={{ marginBottom: 20 }}>
         <StatCard label="Active staff" value={rows.filter((r) => r.is_active).length} icon={Users} />
         <StatCard label="Registrar" value={count('registrar')} icon={UserCog} tone="info" />
         <StatCard label="Finance" value={count('finance')} icon={UserCog} tone="warning" />
+        <StatCard label="SAO" value={count('sao')} icon={UserCog} tone="rose" />
         <StatCard label="Administrators" value={count('admin')} icon={ShieldCheck} tone="violet" />
       </div>
       <div className="split-form">
@@ -156,6 +157,7 @@ export function StaffManagement() {
               <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
                 <option value="registrar">Registrar staff</option>
                 <option value="finance">Finance staff</option>
+                <option value="sao">SAO staff</option>
                 <option value="admin">Administrator</option>
               </select>
             </label>
@@ -179,6 +181,7 @@ export function StaffManagement() {
                           onChange={(e) => update(row, { role: e.target.value }, `${row.name} is now ${roleInfo(e.target.value).label.toLowerCase()}.`)}>
                           <option value="registrar">Registrar</option>
                           <option value="finance">Finance</option>
+                          <option value="sao">SAO</option>
                           <option value="staff">Legacy staff</option>
                           <option value="admin">Admin</option>
                         </select>
@@ -194,7 +197,7 @@ export function StaffManagement() {
                       </div></td>
                     </tr>
                   );
-                }) : <tr><td colSpan={5}><EmptyState icon={UserCog} title="No staff yet">Create the first Registrar or Finance account.</EmptyState></td></tr>}
+                }) : <tr><td colSpan={5}><EmptyState icon={UserCog} title="No staff yet">Create the first Registrar, Finance or SAO account.</EmptyState></td></tr>}
               </tbody>
             </table>
           </div>

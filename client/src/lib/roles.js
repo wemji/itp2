@@ -1,4 +1,5 @@
-export const STAFF_ROLES = ['admin', 'staff', 'registrar', 'finance'];
+export const DESK_ROLES = ['registrar', 'finance', 'sao'];
+export const STAFF_ROLES = ['admin', 'staff', ...DESK_ROLES];
 export const isStaff = (role) => STAFF_ROLES.includes(role);
 export const homeFor = (role) => (isStaff(role) ? '/admin' : '/dashboard');
 
@@ -6,12 +7,13 @@ export const ROLE_INFO = {
   customer: { label: 'Customer', workspace: 'Customer portal', desk: 'Your account' },
   registrar: { label: 'Registrar staff', workspace: 'Registrar desk', desk: 'Registrar' },
   finance: { label: 'Finance staff', workspace: 'Finance desk', desk: 'Finance' },
+  sao: { label: 'SAO staff', workspace: 'SAO office', desk: 'SAO' },
   staff: { label: 'Service staff', workspace: 'Service desk', desk: 'Operations' },
   admin: { label: 'Administrator', workspace: 'Administration', desk: 'Administration' },
 };
 export const roleInfo = (role) => ROLE_INFO[role] || ROLE_INFO.customer;
 
-export const DEPARTMENTS = { registrar: 'Registrar', finance: 'Finance' };
+export const DEPARTMENTS = { registrar: 'Registrar', finance: 'Finance', sao: 'SAO' };
 export const departmentLabel = (value) => DEPARTMENTS[value] || (value ? value[0].toUpperCase() + value.slice(1) : '—');
 
 export const ACTIVE_STATUSES = ['WAITING', 'CALLED', 'SERVING'];
