@@ -30,6 +30,13 @@ npm ci --omit=dev --workspace server --include-workspace-root --no-audit --no-fu
 chown -R onequeue:onequeue "$APP"
 chown root:onequeue "$APP/.env.production" && chmod 640 "$APP/.env.production"
 
+# Read-only database viewer: `sudo onequeue-db [table]`
+if [ -f /tmp/onequeue-db.mjs ]; then
+  install -m 644 /tmp/onequeue-db.mjs "$APP/onequeue-db.mjs" && rm -f /tmp/onequeue-db.mjs
+  printf '#!/bin/sh\nset -a; . %s/.env.production; set +a\nexec /usr/bin/node %s/onequeue-db.mjs "$@"\n' "$APP" "$APP" > /usr/local/bin/onequeue-db
+  chmod 755 /usr/local/bin/onequeue-db
+fi
+
 cat > /etc/systemd/system/onequeue.service <<UNIT
 [Unit]
 Description=ONEQUEUE web app
@@ -51,10 +58,16 @@ ProtectSystem=full
 WantedBy=multi-user.target
 UNIT
 
+# Free certificates are only issued for names, so the bare IP just redirects to the sslip.io name.
+IP="$(echo "${HOST%%.sslip.io}" | tr - .)"
 cat > /etc/caddy/Caddyfile <<CADDY
 $HOST {
   encode gzip
   reverse_proxy 127.0.0.1:8080
+}
+
+http://$IP {
+  redir https://$HOST{uri} 302
 }
 CADDY
 
@@ -63,6 +76,8 @@ systemctl enable caddy onequeue >/dev/null 2>&1
 systemctl restart caddy
 
 if grep -qE '^SUPABASE_URL=https://[a-z0-9]+\.supabase\.co' "$APP/.env.production"; then
+  # Real keys are present: drop the temporary preview override and run in full production mode.
+  rm -rf /etc/systemd/system/onequeue.service.d/preview.conf && systemctl daemon-reload
   systemctl restart onequeue
   for i in $(seq 1 15); do curl -fsS http://127.0.0.1:8080/api/health >/dev/null 2>&1 && break; sleep 1; done
   curl -fsS http://127.0.0.1:8080/api/health && echo "  <- app healthy"

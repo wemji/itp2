@@ -29,7 +29,7 @@ if ! grep -qE '^SUPABASE_URL=https://[a-z0-9]+\.supabase\.co' "$WORK/onequeue.en
 fi
 
 echo "==> Uploading to $USER_@$IP"
-$SCP "$WORK"/onequeue.* deploy/aws-ec2/remote-setup.sh "$USER_@$IP:/tmp/"
+$SCP "$WORK"/onequeue.* deploy/aws-ec2/remote-setup.sh deploy/aws-ec2/onequeue-db.mjs "$USER_@$IP:/tmp/"
 echo "==> Configuring the server"
 $SSH "$USER_@$IP" "sudo touch /opt/onequeue/.env.production 2>/dev/null || sudo mkdir -p /opt/onequeue && sudo touch /opt/onequeue/.env.production; sudo bash /tmp/remote-setup.sh $HOST"
 
